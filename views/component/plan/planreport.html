@@ -1,0 +1,448 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>进度汇报</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../Styles/jquery.mloading.css">
+    <style type="text/css">
+        .layui-table-cell {
+            font-size: 14px;
+            padding: 0 5px;
+            height: auto;
+            overflow: visible;
+            text-overflow: inherit;
+            white-space: normal;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layui-fluid" id="component-tabs">
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+
+                    <div class="layui-card-header">进度汇报</div>
+                    <div class="layui-card-body">
+                        <hr />
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">设备号：</label>
+                                <div class="layui-input-inline">
+                                    <input type="tel" name="phone" lay-verify="required|phone" autocomplete="off" class="layui-input" id="devid" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">设备名称：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="email" lay-verify="email" autocomplete="off" class="layui-input" id="devname" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+                        <p>
+                            （ 点击“白班完成情况”或“晚班完成情况”列的单元格，输入对应指令的计划完成
+                            情况。）
+                        </p>
+                        <table class="layui-table" id="test1" lay-filter="test1"></table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script src="../../../Scripts/jquery-3.4.1.js"></script>
+    <script src="../../../Scripts/xlsx-populate.js"></script>
+    <script src="../../../Scripts/jquery.mloading.js"></script>
+    <script src="../../../Scripts/mestools.js"></script>
+
+    <script>
+        //
+        //layui script
+        //
+
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+            , tableEdit: '{/}../../../Scripts/module/js/tableEdit'
+        }).use(['index', 'table', 'upload', 'laypage', 'laytpl', 'tableEdit'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , router = layui.router()
+                , tableEdit = layui.tableEdit;
+
+            var params = [
+                { name: 1, value: "是" },
+                { name: 2, value: "否" },
+            ];
+
+            //----------------------------------------------------------------------------
+            var table = layui.table;
+            var laypage = layui.laypage;
+
+            var devinfo = layui.data('LocalDevice');
+            $("#devid").val(devinfo.deviceid);
+            $("#devname").val(devinfo.devicename);
+
+            var colsContent = [
+                // { field: 'id', title: 'ID', width: 60, sort: true }
+                { field: 'orderid', title: '生产序号', width: 50, align: 'center' }
+                , { field: 'orderno', width: 140, title: '编号（指令号）', align: 'center' }
+                , { field: 'orderperiod', title: '计划时段', width: 50, align: 'center' } //需要div包裹之后，再进行格式化处理才行
+                , { field: 'contract', title: '合同名称', width: 50, align: 'center' } //使用模板格式化数据
+                , { field: 'modelvoltage', title: '型号电压', align: 'center' }
+                , { field: 'size', title: '规格', align: 'center' }
+                , { field: 'length', title: '合同长度km', width: 60, align: 'center' }
+                , { field: 'requirement', title: '所需生产长度、要求', width: 150, align: 'center' }
+                , { field: 'type', title: '类型', width: 50, align: 'center' }
+                , { field: 'dayshift', title: '白班情况', edit: 'text', style: 'background-color: yellow;', fix: true, align: 'center' }
+                , { field: 'nightshift', title: '晚班情况', edit: 'text', style: 'background-color: yellow;', fix: true, align: 'center' }
+                , {
+                    field: 'complete', align: 'center', title: '是否完成', style: 'background-color: yellow;', width: 50, align: 'center'
+                    , event: 'danxuan', config: { type: 'select', data: params, verify: true }
+                    , templet: function (d) {
+                        if (d.complete) {
+                            if (d.complete.value) {
+                                return d.complete.value;
+                            }
+                            return d.complete;
+                        }
+                        return ''
+                    }
+                }
+                , { field: 'reeltype', title: '盘具类型', align: 'center' }
+                , { field: 'reelsize', title: '盘具规格', align: 'center' }
+            ];
+
+            var tn = 'tbplanreport';//存储表名
+            colsContent = MesTools.GetHideCols(tn, colsContent, $);
+
+            var tableIns = table.render({
+                elem: '#test1'
+                , id: 'idTest'
+                , url: '../../../Handlers/Handler-planreport.ashx'
+                , where: { actid: "getTable", deviceid: devinfo.deviceid }
+                , cols: [colsContent]
+                , page: true
+                , toolbar: 'default'
+                , defaultToolbar: ['filter', 'print', 'exports', {
+                    title: '保存列设置' //标题
+                    , layEvent: 'LAYTABLE_TIPS' //事件名，用于 toolbar 事件中使用
+                    , icon: 'layui-icon-tips' //图标类名
+                }]
+                , done: function (res, curr, count) {
+                    //console.log(res);
+                }
+            });
+
+            //监听单元格编辑
+            table.on('edit(test3)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+            });
+
+            table.on('edit(test1)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+
+                tableIns.reload({
+                    where: { //设定异步数据接口的额外参数，任意设
+                        actid: 'updateTable'
+                        , deviceid: devinfo.deviceid
+                        , newvalue: value
+                        , id: data.id
+                        , field: field
+                    }
+                    , page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+
+            });
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'test3' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: 5 //数据总数，从服务端得到
+            });
+
+            //添加采集设备
+            $('#btn-add').on('click', function () {
+
+                alert("Hello, World !");
+                //这里以搜索为例
+                tableIns.reload({
+                    where: { //设定异步数据接口的额外参数，任意设
+                        actid: 'insTable'
+                    }
+                    , page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+            });
+
+
+
+            //----------------------------------------------------------------------------
+            element.render();
+
+            element.on('tab(component-tabs-brief)', function (obj) {
+                layer.msg(obj.index + '：' + this.innerHTML);
+            });
+
+            /* 触发事件 */
+            var active = {
+                tabAdd: function () {
+                    /* 新增一个Tab项 */
+                    element.tabAdd('demo', {
+                        title: '新选项' + (Math.random() * 1000 | 0) /* 用于演示 */
+                        , content: '内容' + (Math.random() * 1000 | 0)
+                        , id: new Date().getTime() /* 实际使用一般是规定好的id，这里以时间戳模拟下 */
+                    })
+                }
+                , tabDelete: function (othis) {
+                    /* 删除指定Tab项 */
+                    element.tabDelete('demo', '22');
+                    othis.addClass('layui-btn-disabled');
+                }
+                , tabChange: function () {
+                    /* 切换到指定Tab项 */
+                    element.tabChange('demo', '33');
+                }
+            };
+
+            $('#component-tabs .site-demo-active').on('click', function () {
+                var othis = $(this), type = othis.data('type');
+                active[type] ? active[type].call(this, othis) : '';
+            });
+
+            /* Hash地址的定位 */
+            var layid = router.hash.replace(/^#layid=/, '');
+            layid && element.tabChange('component-tabs-hash', layid);
+
+            element.on('tab(component-tabs-hash)', function (elem) {
+                location.hash = '/' + layui.router().path.join('/') + '#layid=' + $(this).attr('lay-id');
+            });
+
+            //-------------------新下拉框-----------------
+            /**
+             * 参数cols是table.render({})中的cols属性值
+             * aop代理是基于event点击事件进行操作的，
+             * 因此cols中务必开启event点击事件！
+             **/
+            var cols = tableIns.config.cols;
+            var aopTable = tableEdit.aopObj(cols); //获取一个aop对象
+            /**
+             * 注意：
+             * 1、 aopTable.on('tool(xxx)',function (obj) {})
+             * 2、 table.on('tool(yyy)',function (obj) {})
+             * 如果1中的xxx与2中的yyy字符串相同时，
+             * 不能同时用，用了会造成后调用者覆盖前调用者。
+             * 应该直接用1来代替2，因为1中包含了2中的事件。
+             * 如果不相同，则可以同时使用。
+             **/
+            //头工具栏事件
+            table.on('toolbar(test1)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        //var data = checkStatus.data;
+                        //layer.alert(JSON.stringify(data));
+                        //页面层
+
+                        layer.open({
+                            title: '添加设备',
+                            type: 2,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['1024px', '500px'], //宽高
+                            content: 'devadd.html'                            
+                        });
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.msg('已保存列设置');
+                        MesTools.SetHideCols('idTest', tn, table);
+                        break;
+                };
+            });
+
+
+            aopTable.on('tool(test1)', function (obj) {
+                var field = obj.field; //单元格字段
+                var value = obj.value; //修改后的值
+                var data = obj.data; //当前行旧数据
+                var event = obj.event; //当前单元格事件属性值
+                //console.log(value);
+                if (event === 'danxuan') {
+                    var content = value.value;//单元格的文字：正常/异常
+                    if (content === '否') {
+                        var update = {};
+                        update[field] = value;
+                        //把value更新到行中
+                        obj.update(update); //更新异常
+
+                        //弹层输入文本
+                        //layer.prompt({ title: '异常记录', value: '', formType: 2 }, function (text, index) {
+                        //    layer.close(index);
+                        //    var update = {};
+                        //    update[field] = value;
+                        //    //把value更新到行中
+                        //    obj.update(update); //更新异常
+
+                        //    obj.update({
+                        //        DayRecord: text //更新记录
+                        //    });
+                        //});
+                    } else if (content === '是') {
+                        var update = {};
+                        update[field] = value;
+                        //把value更新到行中
+                        obj.update(update);
+                    }
+                    layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value.value);
+
+                    tableIns.reload({
+                        where: { //设定异步数据接口的额外参数，任意设
+                            actid: 'updateTable'
+                            , deviceid: devinfo.deviceid
+                            , newvalue: value.value
+                            , id: data.id
+                            , field: field
+                        }
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    });
+
+                    /**
+                     *说白了，此obj与table.on('tool(tableEvent)',function (obj) {})
+                     *中的obj对象是同一个，所以可以如此操作。
+                     *
+                     * */
+                } if (event === 'danxuan1') {
+                    var content = value.value;//单元格的文字：正常/异常
+                    if (content === '异常') {
+                        //弹层输入文本
+                        layer.prompt({ title: '异常记录', value: '', formType: 2 }, function (text, index) {
+                            layer.close(index);
+                            var update = {};
+                            update[field] = value;
+                            //把value更新到行中
+                            obj.update(update); //更新异常
+
+                            obj.update({
+                                NightRecord: text //更新记录
+                            });
+                        });
+                    } else if (content === '正常') {
+                        var update = {};
+                        update[field] = value;
+                        //把value更新到行中
+                        obj.update(update);
+                        obj.update({
+                            NightRecord: '' //更新记录
+                        });
+                    }
+
+                    /**
+                     *说白了，此obj与table.on('tool(tableEvent)',function (obj) {})
+                     *中的obj对象是同一个，所以可以如此操作。
+                     *
+                     * */
+                } else if (event === 'check') {
+                    //layer.alert(JSON.stringify(data));
+                    console.log(data.DayShift);
+                    var res = '', memo = '';
+                    var aDate = new Date;
+                    var submitHour = aDate.getHours();
+                    if (submitHour >= 8 && submitHour < 20) {
+                        res = data.DayShift.value;
+                        if (res == null || $.trim(res) == '') {
+                            layer.msg('提交字段为空！');
+                            return;
+                        }
+                        if (res === '异常') {
+                            memo = $.trim(data.DayRecord);
+                            if (memo == null || memo == '') {
+                                layer.msg('请填写白班异常记录！');
+                                return;
+                            }
+                        }
+                    } else if ((submitHour >= 0 && submitHour < 8) || (submitHour >= 20 && submitHour < 24)) {
+                        res = data.NightShift.value;
+                        if (res == null || $.trim(res) == '') {
+                            layer.msg('提交字段为空！');
+                            return;
+                        }
+                        if (res === '异常') {
+                            memo = $.trim(data.NightRecord);
+                            if (memo == null || memo == '') {
+                                layer.msg('请填写夜班异常记录！');
+                                return;
+                            }
+                        }
+                    }
+
+                    var u = layui.data('login');
+                    var realName = u.realname;
+
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicecheck.ashx',
+                        data: { actid: 'insTable', data: JSON.stringify(data), workname: realName },
+                        success: function (res) {
+                            layer.msg('提交成功');
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /> 
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+
+
+</body>
+</html>

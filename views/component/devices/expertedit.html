@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+</head>
+<body>
+    <form class="layui-form" id="devinfo" action="" style="margin:10px" lay-filter="example">
+
+        <div class="layui-form-item">
+            <div class="layui-inline" style="display:none">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="id" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">制表人 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="sender" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">制表部门 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="department" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">开始时间 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="startdate" id="startdate" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">截止时间 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="enddate" id="enddate" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">专业点检员 *</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="expert" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">设备信息 *</label>
+                <div class="layui-input-inline">
+                    <select name="devdept" id="devdept" lay-verify="required">
+                        <!--<option value=""></option>-->
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="devno" id="devno" lay-verify="required">
+                        <!--<option value=""></option>-->
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="devname" id="devname" lay-verify="required">
+                        <!--<option value=""></option>-->
+                    </select>
+                </div>
+
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">点检部位 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="part" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">定修要求 *</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="requirement" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">定修责任人 *</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="maintainer" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">完成时间 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="duedate" id="date" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">点检内容 *</label>
+            <div class="layui-input-block">
+                <input type="text"  name="item" lay-verify="required"  placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">点检详情</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" class="layui-textarea" name="memo"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            </div>
+        </div>
+    </form>
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['form', 'layedit', 'laydate'], function() {
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+            //表单
+            form.render();
+
+            //日期
+            laydate.render({
+                elem: '#date'
+            });
+            laydate.render({
+                elem: '#startdate'
+            });
+            laydate.render({
+                elem: '#enddate'
+            });     
+            
+            //自定义验证规则
+            form.verify({
+                title: function (value) {
+                    if (value.length < 5) {
+                        return '标题至少得5个字符啊';
+                    }
+                }
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+                , content: function (value) {
+                    layedit.sync(editIndex);
+                }
+            });           
+
+            //监听提交
+            form.on('submit(demo1)', function (data) {
+                //layer.alert(JSON.stringify(data.field), {
+                //    title: '最终的提交信息'
+                //});
+                data.field.devdept = $("#devdept").find("option:selected").text();
+                data.field.devname = $("#devname").find("option:selected").text();
+                data.field.devno = $("#devno").find("option:selected").text();
+                $.ajax({
+                    url: '../../../Handlers/Handler-expertcheck.ashx',
+                    data: { actid: 'updateTable', data:JSON.stringify(data.field) },
+                    success: function (res) {
+                        alert("提交成功！");
+                        window.parent.location.reload();//刷新父页面
+                        //假设这是iframe页
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    },
+                    error: function (e) {
+                        console.log(e);
+                        alert('提交失败！');
+                    }
+                });
+                return false;
+            });
+
+            //表单赋值
+            var testdata = {
+                "devname": "贤心" // "name": "value"
+                , "devno": "123456"
+                , "interest": 1
+                , "like[write]": true //复选框选中状态
+                , "close": true //开关状态
+                , "sex": "女"
+                , "desc": "我爱 layui"
+            };
+
+            layui.$('#LAY-component-form-setval').on('click', function () {
+                form.val('example', testdata);
+            });
+
+            //表单取值
+            layui.$('#LAY-component-form-getval').on('click', function () {
+                var data = form.val('example');
+                alert(JSON.stringify(data));
+            });
+        });
+    </script>
+</body>
+</html>

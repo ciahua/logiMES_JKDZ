@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>电量监控</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <script type="text/html" id="tool">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="test2" > 
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">周期</label>
+                    <div class="layui-input-block">
+                        <select name="sex" lay-filter="aihao"> 
+                            <option value="13">小时</option>
+                            <option value="11">天数</option>
+                            <option value="7">月数</option>
+                            <option value="4">年数</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline" id="datime_p">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 300px;" id="datime">
+                        <input type="text" id="price_min" name="datetime" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="test1"></div>
+    </script>
+
+    <div class="layui-fluid">
+        <div class="layui-card"> 
+            <div class="layui-card-body">
+                <div class="layui-row"> 
+                    <div class="layui-col-md3"> 
+                        <div id="test12" class="demo-tree-more" style="height: 820px; overflow: scroll;"></div>
+                    </div>
+                     <div class="layui-col-md9">
+                         <table id="demo" lay-filter="test"></table>
+                     </div> 
+                </div>
+               
+            </div>
+
+        </div>
+    </div>
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <script>
+        var qq;
+        var stime, stype;
+        function dateFormat(fmt, date) {
+            let ret;
+            const opt = {
+                "Y+": date.getFullYear().toString(),        // 年
+                "m+": (date.getMonth() + 1).toString(),     // 月
+                "d+": date.getDate().toString(),            // 日
+                "H+": date.getHours().toString(),           // 时
+                "M+": date.getMinutes().toString(),         // 分
+                "S+": date.getSeconds().toString()          // 秒
+                // 有其他格式化字符需求可以继续添加，必须转化成字符串
+            };
+            for (let k in opt) {
+                ret = new RegExp("(" + k + ")").exec(fmt);
+                if (ret) {
+                    fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+                };
+            };
+            return fmt;
+        }
+
+
+        var data = [{
+            title: '一级1'
+            , id: 1
+            , field: 'name1'
+            , checked: true
+            , spread: true
+            , children: [{
+                title: '二级1-1 可允许跳转'
+                , id: 3
+                , field: 'name11' 
+            }, {
+                title: '二级1-2'
+                , id: 4
+                , spread: true 
+            }, {
+                title: '二级1-3'
+                , id: 20
+                , field: '' 
+            }]
+        }, {
+            title: '一级2'
+            , id: 2
+            , field: ''
+            , spread: true
+            , children: [{
+                title: '二级2-1'
+                , id: 5
+                , field: ''
+                , spread: true 
+            }, {
+                title: '二级2-2'
+                , id: 6
+                , field: '' 
+            }]
+        }, {
+            title: '一级3'
+            , id: 16
+            , field: ''
+            , spread: true
+            , checked: true
+ 
+            , children: []
+        }];
+
+
+
+
+        var treedate = [];
+
+
+
+
+
+
+        layui.use(['tree','table', 'laydate','form'], function () {
+           
+
+
+
+
+
+
+
+
+
+            //===================================
+
+
+
+            var laypage = layui.laypage;
+               
+              //执行一个laypage实例
+              laypage.render({
+                elem: 'test1' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: 50 //数据总数，从服务端得到
+                , limit: 80
+                , limits:[100]
+              });
+
+             var form = layui.form;
+            //监听搜索
+            form.on('submit(LAY-user-front-search)', function (data) { 
+                var field = data.field; 
+
+                if (field.datetime.length > 0) {
+                    console.log(field);
+                    stime = field.datetime;
+                    stype = field.sex;
+                    var star    = field.datetime.split(" - ")[0];
+                    var end     = field.datetime.split(" - ")[1];
+                    var type = field.sex;
+                    load(star, end, type);
+                    console.log(field);  
+                    layui.form.val("test2", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                      "datetime": stime// "name": "value"
+                      ,"sex":stype 
+                    });
+
+                }
+               
+            }); 
+
+            var stars = dateFormat("YYYY-mm-01 00:00:00", new Date());
+            var ends =  dateFormat("YYYY-mm-dd HH:MM:SS", new Date());
+            var types = "11";
+            load(stars, ends, types); 
+            layui.form.val("test2", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                "datetime": stars+" - "+ends// "name": "value"
+                ,"sex":11 
+            });
+
+
+        });
+
+        var load = function (stars, ends, types) {
+ 
+            var $ = layui.$; 
+            var form = layui.form;
+            var table = layui.table;
+            var tree = layui.tree
+                , layer = layui.layer
+                , util = layui.util;
+
+
+
+
+            var dat = JSON.parse($.ajax({ url: '../../../Handlers/Handler-energy.ashx?actid=getData&star=' + stars + '&end=' + ends + '&type=' + types + '', async: false }).responseText).data;
+            var devslist = JSON.parse($.ajax({ url: '../../../Handlers/Handler-devicelist.ashx?actid=getTable&page=1&limit=1000', async: false }).responseText).data
+            //http://10.10.154.253:8020/Handlers/Handler-devicelist.ashx?actid=getTable&page=1&limit=1000
+            //console.log(dat[0]);
+            var cos = [];
+            treedate = [];
+            var typestr = [];
+            typestr["CL"] = "成缆";
+            typestr["LL"] = "连硫";
+            typestr["BZ"] = "编织";
+            typestr["JX"] = "绞线";
+            typestr["JS"] = "挤塑";
+            typestr["LS"] = "拉丝";
+             var ids = 2;
+            var typedata = [];
+            for (k in devslist) {
+                var types = devslist[k].DevNo.substring(0, 2);
+                if (typedata[types] == null) {
+                    typedata[types] = {
+                        title: typestr[types]
+                        , id: ids++
+                        , checked: true
+                        , spread: true
+                        , children: []
+                    }
+                } 
+                typedata[types].children.push({ title:devslist[k].DevName ,id:ids++ , checked: true});
+            }
+            //console.log(typedata);
+            for (k in typedata) {
+                treedate.push(typedata[k]);
+            }
+
+
+
+            cos.push({ field: "SQLtime", fixed: "left", title: "时间", width: 180 });//SQLtime
+           
+            for (k in dat[0]) {
+                if ((k != "SQLtime" && k != "year" && k != "day" && k != "month"))//month
+                    cos.push({ field: k, title: k+"(度)", width: 120 });
+                if (k != 'SQLtime') {
+                    
+                    //treedate.push({ title:k ,id:ids++ , checked: true});
+                }
+               
+            } 
+
+
+
+            
+            //基本演示
+            tree.render({
+                elem: '#test12'
+                , data: [{
+                     title: '全选'
+                    , id: 1
+                    , field: ''
+                    , spread: true
+                    , checked: true 
+                    , children: treedate
+                }] //treedate
+                , height: 'full-20'
+                ,showCheckbox: true  //是否显示复选框
+                ,id: 'demoId1'
+                ,isJump: true //是否允许点击节点时弹出新窗口跳转
+                ,click: function(obj){
+                    //var data = obj.data;  //获取当前点击的节点数据
+                    //layer.msg('状态：'+ obj.state + '<br>节点数据：' + JSON.stringify(data));
+                },oncheck: function(obj){
+                    //console.log(obj.data); //得到当前点击的节点数据
+                    //console.log(obj.checked); //得到当前节点的展开状态：open、close、normal
+                    //console.log(obj.elem); //得到当前节点元素
+                    //selectToTree();
+                    setTimeout(function () {
+                        selectToTree();
+                    },100)
+                 }
+
+            });
+
+           // tree.setChecked('demoId1', 1); 
+
+            //console.log(cos); 
+            //第一个实例
+            table.render({
+
+                elem: '#demo'
+                , page: true 
+                , toolbar: '#tool'
+                , height: 'full-20'
+                , data: dat 
+                , cols: [cos]
+             
+            });
+
+
+            var laydate = layui.laydate;
+  
+            //执行一个laydate实例
+            setTimeout(function () {
+                 
+                /*laydate.render({
+                    elem: '#price_min' //指定元素
+                    , type: 'datetime'
+                    , range: true
+                    //, value: [new Date(),new Date()]
+                });*/ 
+                if (stype >= 11) {
+                     layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'datetime'
+                        //, value: new Date()  
+                        , range: true
+                    });
+                } else if (stype == 7) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'month'
+                        //, value: new Date()
+                        , range: true
+                    });
+                } else if (stype == 4) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'year'
+                        //, value: new Date()
+                        , range: true
+                    });
+                }
+            });
+
+           layui.form.on('select(aihao)',function(data){
+                //console.log(data);
+                //console.log(data.elem); //得到select原始DOM对象
+                //console.log(data.value); //得到被选中的值
+                //console.log(data.othis); //得到美化后的DOM对象 
+                document.getElementById("datime").remove();
+                document.getElementById("datime_p").append(layui.$('<div class="layui-input-inline" style="width: 300px;" id="datime">  <input type="text" id="price_min" name="datetime" placeholder="" autocomplete="off" class="layui-input">   </div>')[0])
+
+                
+                if (data.value >= 11) {
+                     layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'datetime'
+                        //, value: new Date()  
+                        , range: true
+                    });
+                } else if (data.value == 7) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'month'
+                        //, value: new Date()
+                        , range: true
+                    });
+                } else if (data.value == 4) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'year'
+                        //, value: new Date()
+                        , range: true
+                    });
+                }
+            });
+            
+          layui.table.on('toolbar()', function (obj) {
+                var config = obj.config;
+               var btnElem = $(this);
+
+                var tableId = config.id;
+                var tableView = config.elem.next();
+                console.log(btnElem);
+                switch (obj.event) {
+                    case 'LAYTABLE_COLS':
+                     //$('div[lay-event="LAYTABLE_COLS"]').find("ul").hide();
+                    // 给筛选列添加全选还有反选的功能
+                    var panelElem = btnElem.find('.layui-table-tool-panel');
+                    var checkboxElem = panelElem.find('[lay-filter="LAY_TABLE_TOOL_COLS"]');
+                    var checkboxCheckedElem = panelElem.find('[lay-filter="LAY_TABLE_TOOL_COLS"]:checked');
+                    $('<li class="layui-form" lay-filter="LAY_TABLE_TOOL_COLS_FORM">' +
+                        '<input type="checkbox" lay-skin="primary" lay-filter="LAY_TABLE_TOOL_COLS_ALL" '
+                        + ((checkboxElem.length === checkboxCheckedElem.length) ? 'checked' : '') + ' title="全选">' +
+                        '<span class="LAY_TABLE_TOOL_COLS_Invert_Selection">反选</span></li>')
+                        .insertBefore(panelElem.find('li').first())
+                        .on('click', '.LAY_TABLE_TOOL_COLS_Invert_Selection', function (event) {
+                            layui.stope(event);
+                            // 反选逻辑
+                            panelElem.find('[lay-filter="LAY_TABLE_TOOL_COLS"]+').click();
+                        });
+                    layui.form.render('checkbox', 'LAY_TABLE_TOOL_COLS_FORM');
+                    break;
+                }
+            });
+
+            // 监听筛选列panel中的全选
+            layui.form.on('checkbox(LAY_TABLE_TOOL_COLS_ALL)', function (obj) {
+                console.log(obj);
+                console.log(obj.elem);
+                qq = obj;
+                $(obj.elem).closest('ul').find('[lay-filter="LAY_TABLE_TOOL_COLS"]' + (obj.elem.checked ? ':not(:checked)' : ':checked') + '+').click();
+            });
+            //var panelElem = btnElem.find('.layui-table-tool-panel'); 
+            // 监听筛选列panel中的单个记录的change
+            $(document).on('change', 'input[lay-filter="LAY_TABLE_TOOL_COLS"]', function (event) {
+                var elemCurr = $(this);
+                // 筛选列单个点击的时候同步全选的状态
+                $('input[lay-filter="LAY_TABLE_TOOL_COLS_ALL"]').prop('checked',  elemCurr.prop('checked') ? (!$('input[lay-filter="LAY_TABLE_TOOL_COLS"]').not(':checked').length) : false);
+                form.render('checkbox', 'LAY_TABLE_TOOL_COLS_FORM');
+            });
+
+
+
+        };
+
+        var selectToTree = function () {
+            var $ = layui.$; 
+            var p = layui.tree.getChecked('demoId1');
+            var arr = [];
+            for(pi in p) arr.push(p[pi]);
+
+            var keys = [];
+            while (arr.length > 0) {
+                var node = arr.pop();
+                if (node != null) {
+                    //console.log(node);
+                    //node.title[]
+                    keys[node.title] = 1;
+                    if (node.children != null && node.children.length > 0) { 
+                        for (ni in node.children) {
+                             arr.push(node.children[ni]);
+                        }
+                    }
+                }
+               
+            } 
+
+            var nokeys = [];
+            $('div[lay-event="LAYTABLE_COLS"]').click();
+            $('div[lay-event="LAYTABLE_COLS"]').find("ul").hide();
+
+            var lo = $('input[lay-filter="LAY_TABLE_TOOL_COLS"]:checked +');
+
+
+            for(pi in treedate) arr.push(treedate[pi]); 
+            while (arr.length > 0) {
+                var node = arr.pop();
+                if (node != null) {
+                    var title = node.title;
+                    if (keys[title] != 1) {
+                        nokeys[title] = 1;
+                    }   
+                    if (node.children != null && node.children.length > 0) { 
+                        for (ni in node.children) {
+                             arr.push(node.children[ni]);
+                        }
+                    }
+                }
+            }
+            
+
+            for (li in lo) {
+                if (lo[li].innerText != null && lo[li].innerText.length > 0)
+                if (nokeys[lo[li].innerText.split("(")[0]] == 1) {
+                    lo[li].click();
+                } 
+            }
+
+          
+            //$('input[lay-filter="LAY_TABLE_TOOL_COLS"]+')[0].innerText
+             
+            var l = $('input[lay-filter="LAY_TABLE_TOOL_COLS"]:not(:checked)+');
+            for (li in l) {
+                if (l[li].innerText != null && l[li].innerText.length>0)
+                if (keys[l[li].innerText.split("(")[0]] == 1) l[li].click();
+            }
+        }
+        
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+</head>
+<body>
+    <form class="layui-form" id="devinfo" action="" style="margin:10px" lay-filter="example">
+
+        <div class="layui-form-item">
+            <div class="layui-inline" style="display:none">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="id" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">计划分类</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="sheetname" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">设备号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="machineid" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">设备名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="machinename" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">生产序号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orderid" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">指令号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orderno" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">计划时段</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orderperiod" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">合同名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="contract" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">型号电压</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="modelvoltage" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">规格</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="size" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">合同长度km</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="length" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">所需长度</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="requirement" lay-verify="required|number" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">类型</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="type" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">盘具类型</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="reeltype" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">盘具规格</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="reelsize" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">校核人</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="approver" id="approver" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="因异常跳计划生产需管理人员或班组长签字确认，注明原因" class="layui-textarea" name="memo"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    <!--<button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-setval">赋值</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-getval">取值</button>-->
+                </div>
+            </div>
+</form>
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['form', 'layedit', 'laydate'], function() {
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+            //表单
+            form.render();
+
+            //日期
+            laydate.render({
+                elem: '#date'
+            });
+            laydate.render({
+                elem: '#date1'
+            });
+            
+            //自定义验证规则
+            form.verify({
+                title: function (value) {
+                    if (value.length < 5) {
+                        return '标题至少得5个字符啊';
+                    }
+                }
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+                , content: function (value) {
+                    layedit.sync(editIndex);
+                }
+            });
+
+            //监听提交
+            form.on('submit(demo1)', function (data) {
+                //layer.alert(JSON.stringify(data.field), {
+                //    title: '最终的提交信息'
+                //});
+                $.ajax({
+                    url: '../../../Handlers/Handler-planprogress.ashx',
+                    data: { actid: 'eidtTable', data:JSON.stringify(data.field) },
+                    success: function (res) {
+                        alert("提交成功！");
+                        window.parent.location.reload();//刷新父页面
+                        //假设这是iframe页
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    },
+                    error: function (e) {
+                        console.log(e);
+                        alert('提交失败！');
+                    }
+                });
+                return false;
+            });
+
+            //表单赋值
+            var testdata = {
+                "devname": "贤心" // "name": "value"
+                , "devno": "123456"
+                , "interest": 1
+                , "like[write]": true //复选框选中状态
+                , "close": true //开关状态
+                , "sex": "女"
+                , "desc": "我爱 layui"
+            };
+
+            layui.$('#LAY-component-form-setval').on('click', function () {
+                form.val('example', testdata);
+            });
+
+            //表单取值
+            layui.$('#LAY-component-form-getval').on('click', function () {
+                var data = form.val('example');
+                alert(JSON.stringify(data));
+            });
+        });
+    </script>
+</body>
+</html>

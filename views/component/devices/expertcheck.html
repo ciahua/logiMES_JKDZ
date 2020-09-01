@@ -1,0 +1,404 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>专业点检</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">专业点检</div>
+        <div class="layui-card-body">
+            <div class="test-table-reload-btn" style="margin-bottom: 10px;">
+                搜索内容：
+                <div class="layui-inline">
+                    <input class="layui-input" name="id" id="test-table-demoReload" autocomplete="off">
+                </div>
+                <button class="layui-btn" data-type="reload">搜索</button>
+            </div>
+
+            <table class="layui-table" id="demo" lay-filter="demo"></table>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="addNew">新增</button>
+            </div>
+        </script>        
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+    </div>
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        var DeviceNameval = "";
+        var GruopDeviceIdval = "";
+        var GruopMaintainerval = "";
+        var GruopExpertval = ""; 
+        layui.use(['tree', 'util', 'layer', 'element', 'jquery', 'form', 'table'], function (table, layer, element, $, form) {
+            var table = layui.table;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+            var selectParams = [
+                { name: 1, value: "正常" },
+                { name: 2, value: "异常" },
+            ];
+
+            var tempdat = JSON.parse($.ajax({ url: "../../../Handlers/Handler-expertcheck.ashx?actid=GroupDeviceName", async: false }).responseText).data;
+            //console.log(tempdat);
+            var DeviceNameTile = '<select id=\'DeviceNameTile\' style=\'font-size:15px;height:27px;width:130px\'  lay-ignore>';
+            DeviceNameTile += '<option value=\'\'>设备名称</option>';
+            for (k in tempdat) {
+                DeviceNameTile += '<option value=\'' + tempdat[k].DeviceName +'\'>' + tempdat[k].DeviceName+'</option>';
+            } 
+            DeviceNameTile += '</select>';
+
+            tempdat = JSON.parse($.ajax({ url: "../../../Handlers/Handler-expertcheck.ashx?actid=GruopDeviceId", async: false }).responseText).data;
+            //console.log(tempdat);
+            var GruopDeviceIdTile = '<select id=\'GruopDeviceIdTile\' style=\'font-size:15px;height:27px;width:80px\'  lay-ignore>';
+            GruopDeviceIdTile += '<option value=\'\'>设备号</option>';
+            for (k in tempdat) {
+                GruopDeviceIdTile += '<option value=\'' + tempdat[k].DeviceId + '\'>' + tempdat[k].DeviceId + '</option>';
+            }
+            GruopDeviceIdTile += '</select>';
+
+            tempdat = JSON.parse($.ajax({ url: "../../../Handlers/Handler-expertcheck.ashx?actid=GruopMaintainer", async: false }).responseText).data;
+            //console.log(tempdat);
+            var GruopMaintainerTile = '<select id=\'GruopMaintainerTile\' style=\'font-size:15px;height:27px;width:90px\'  lay-ignore>';
+            GruopMaintainerTile += '<option value=\'\'>定修责任人</option>';
+            for (k in tempdat) {
+                GruopMaintainerTile += '<option value=\'' + tempdat[k].Maintainer + '\'>' + tempdat[k].Maintainer + '</option>';
+            }
+            GruopMaintainerTile += '</select>';
+
+
+            tempdat = JSON.parse($.ajax({ url: "../../../Handlers/Handler-expertcheck.ashx?actid=GruopExpert", async: false }).responseText).data;
+            //console.log(tempdat);
+            var GruopExpertTile = '<select id=\'GruopExpertTile\' style=\'font-size:15px;height:27px;width:80px\'  lay-ignore>';
+            GruopExpertTile += '<option value=\'\'>专业点检员</option>';
+            for (k in tempdat) {
+                GruopExpertTile += '<option value=\'' + tempdat[k].Expert + '\'>' + tempdat[k].Expert + '</option>';
+            }
+            GruopExpertTile += '</select>';
+
+
+
+            //console.log(DeviceNameTile); 
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#demo'
+                , url: '../../../Handlers/Handler-expertcheck.ashx' //设置异步接口
+                , where: { actid: 'getExpertCheck' }
+                , cols: [[
+                    { checkbox: true, fixed: true, style: 'background-color: #fff;' }
+                    , { field: 'Id', width: 80, sort: true, fixed: true, style: 'background-color: #fff;', title: 'ID' }
+                    , { field: 'Sender', sort: true, style: 'background-color: #fff;', title: '制表人' }
+                    , { field: 'Department', sort: true, style: 'background-color: #fff;', title: '制表部门' }
+                    , { field: 'StartDate', sort: true, style: 'background-color: #fff;', title: '开始时间' }
+                    , { field: 'EndDate', sort: true, style: 'background-color: #fff;', title: '截止时间' }
+                    , { field: 'Expert', minWidth: 130, style: 'background-color: #fff;', title: GruopExpertTile }
+                    , { field: 'DeviceId', minWidth: 130,  style: 'background-color: #fff;', title: GruopDeviceIdTile }
+                    , { field: 'DeviceName', minWidth: 170, style: 'background-color: #fff;', title: DeviceNameTile }
+                    , { field: 'Unit', sort: true, style: 'background-color: #fff;', title: '使用部门' }
+                    , { field: 'Part', style: 'background-color: #fff;', title: '点检部位' }
+                    , { field: 'Item', style: 'background-color: #fff;', title: '点检内容描述' }
+                    , { field: 'Requirement', style: 'background-color: #fff;', title: '定修要求' }
+                    , { field: 'Maintainer', minWidth: 130, style: 'background-color: #fff;', title: GruopMaintainerTile }
+                    , { field: 'DueDate', style: 'background-color: #fff;', title: '定修完成时间' }
+                    , { field: 'Memo', style: 'background-color: #fff;', title: '备注' }
+                    , { fixed: 'right', minWidth: 150, align: 'center', toolbar: '#barDemo', title: '操作' }
+                ]]
+                , id: 'idTest'
+                , height: 540
+                , page: true
+                , toolbar: '#toolbarDemo'
+                , done: function () {
+
+                }
+
+            });
+
+            $("#DeviceNameTile").on('change', function () {
+                DeviceNameval = document.getElementById("DeviceNameTile").value;
+                GruopDeviceIdval = "";
+                active.reload(); 
+            });
+
+            $("#GruopDeviceIdTile").on('change', function () {
+                GruopDeviceIdval = document.getElementById("GruopDeviceIdTile").value; 
+                DeviceNameval = "";
+                active.reload();
+            });
+
+            $("#GruopExpertTile").on('change', function () {
+                GruopExpertval = document.getElementById("GruopExpertTile").value;
+                active.reload();
+            });
+
+            $("#GruopMaintainerTile").on('change', function () {
+                GruopMaintainerval = document.getElementById("GruopMaintainerTile").value;
+                active.reload();
+            });
+
+                 
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        //var data = checkStatus.data;
+                        //layer.alert(JSON.stringify(data));
+                        layer.open({
+                            title: '新增',
+                            type: 2,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['90%', '90%'], //宽高
+                            content: 'expertcheckadd.html'                            
+                        });
+
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../../../Handlers/Handler-expertcheck.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+                    layer.open({
+                        title: '编辑设备',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['90%', '90%'], //宽高
+                        content: 'expertedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+
+                            //---------------设置子页面的选择数据集合----------------------------------
+                            function addOption(id, value, text) {
+                                var optionArr = body.find('#' + id + ' option');
+                                for (var i = 0; i < optionArr.length; i++) {
+                                    if (optionArr[i].text == text || optionArr[i].value == value) {
+                                        return false;
+                                    }
+                                }
+                                var addOption = "<option value='" + value + "'>" + text + "</option>";
+                                body.find('#' + id).append(addOption);
+                            };
+
+                            //获取设备编号，名称，部门，在父页面加载select的选项
+                            $.ajax({
+                                url: '../../../Handlers/Handler-expertcheck.ashx',
+                                data: { actid: 'getDeviceInfo' },
+                                async: false,
+                                success: function (info) {
+                                    body.find('#devdept').empty();
+                                    body.find('#devname').empty();
+                                    body.find('#devno').empty();
+                                    var devinfo = JSON.parse(info);
+                                    //console.log(devinfo.data);
+                                    var option1 = "<option value=''></option>";
+                                    var option2 = "<option value=''></option>";
+                                    var option3 = "<option value=''></option>";
+
+                                    body.find('select[name="devdept"]').append(option1);
+                                    body.find('select[name="devname"]').append(option2);
+                                    body.find('select[name="devno"]').append(option3);
+                                    var devdata = devinfo.data;
+                                    $.each(devdata, function (index, item) {
+                                        addOption('devdept', index, item.DevDept);
+                                        addOption('devname', index, item.DevName);
+                                        addOption('devno', index, item.DevNo);
+                                    });
+
+                                    body.find('#devno option:contains(' + data.DeviceId + ')').each(function () {
+                                        if ($(this).text() == data.DeviceId) {
+                                            $(this).attr('selected', true);
+                                        }
+                                    });
+                                    body.find('#devname option:contains(' + data.DeviceName + ')').each(function () {
+                                        if ($(this).text() == data.DeviceName) {
+                                            $(this).attr('selected', true);
+                                        }
+                                    });
+                                    body.find('#devdept option:contains(' + data.Unit + ')').each(function () {
+                                        if ($(this).text() == data.Unit) {
+                                            $(this).attr('selected', true);
+                                        }
+                                    });
+
+                                    form.render('select');//必须有，刷新表单select
+                                },
+                                error: function (e) {
+                                    alert('提交失败！');
+                                    //console.log(e);
+                                }
+                            });  
+
+                            //---------------设置元素----------------------------------
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='sender']").val(data.Sender);
+                            body.find("input[name='department']").val(data.Department);
+                            body.find("input[name='startdate']").val(data.StartDate);
+                            body.find("input[name='enddate']").val(data.EndDate);
+                            body.find("input[name='expert']").val(data.Expert);
+                            //body.find('select[name="devno"]').val(data.DeviceId);
+                            //body.find("#devname").val(data.DeviceName);
+                            //body.find("#devdept").val(data.Unit);
+                            body.find("input[name='part']").val(data.Part);
+                            body.find("input[name='item']").val(data.Item);
+                            body.find("input[name='requirement']").val(data.Requirement);
+                            body.find("input[name='maintainer']").val(data.Maintainer);
+                            body.find("input[name='duedate']").val(data.DueDate);                            
+                            body.find("textarea[name='memo']").val(data.Memo);
+                            form.render('select');//必须有，刷新表单select
+                        }
+
+                    });
+
+                    //layer.prompt({
+                    //    formType: 2
+                    //    , value: data.DevNo
+                    //}, function (value, index) {
+                    //    obj.update({
+                    //        DevNo: value
+                    //    });
+                    //    layer.close(index);
+                    //});
+                } else if (obj.event === 'check') {
+                    //layer.alert(JSON.stringify(data));
+                    console.log(data.Result);
+                    var res = data.Result;
+                    if (res == null || $.trim(res) == '') {
+                        layer.msg('提交字段为空！');
+                        return;
+                    }
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicecheck.ashx',
+                        data: { actid: 'insTable', data: JSON.stringify(data) },
+                        success: function (res) {
+                            layer.msg('提交成功');
+                        },
+                        error: function (e) {
+                        }
+                    });                   
+                }
+            });
+
+            //执行搜索
+            var $ = layui.$, active = {
+                reload: function () {
+                    var demoReload = $('#test-table-demoReload'); 
+                    //执行重载
+                    table.reload('idTest', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            //key: JSON.stringify({
+                            //    id: demoReload.val()
+                            //})
+                            actid: 'searchTable'
+                            , searchkey: demoReload.val()
+                            , "DeviceNameval": DeviceNameval
+                            , "GruopDeviceIdval": GruopDeviceIdval
+                            , "GruopMaintainerval": GruopMaintainerval
+                            , "GruopExpertval": GruopExpertval
+                        }
+                    }); 
+                    document.getElementById("DeviceNameTile").value = DeviceNameval; 
+                    document.getElementById("GruopDeviceIdTile").value = GruopDeviceIdval;
+                    document.getElementById("GruopExpertTile").value = GruopExpertval;
+                    document.getElementById("GruopMaintainerTile").value = GruopMaintainerval;
+
+
+                    $("#DeviceNameTile").on('change', function () {
+                        DeviceNameval = document.getElementById("DeviceNameTile").value;
+                        GruopDeviceIdval = "";
+                        active.reload();
+                    });
+
+                    $("#GruopDeviceIdTile").on('change', function () {
+                        GruopDeviceIdval = document.getElementById("GruopDeviceIdTile").value;
+                        DeviceNameval = "";
+                        active.reload();
+                    });
+
+                    $("#GruopExpertTile").on('change', function () {
+                        GruopExpertval = document.getElementById("GruopExpertTile").value;
+                        active.reload();
+                    });
+
+                    $("#GruopMaintainerTile").on('change', function () {
+                        GruopMaintainerval = document.getElementById("GruopMaintainerTile").value;
+                        active.reload();
+                    });
+
+                }
+            };
+
+            $('.test-table-reload-btn .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+                //alert($("#test-table-demoReload").val());
+            });
+
+            //--------------------下拉框------------------
+            table.on('edit(demo)', function (obj) {                
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.Id + '] ' + field + ' 字段更改为：' + value);
+                layer.msg('[ID: ' + data.Id + '] ' + field + ' 字段更改为：' + JSON.stringify(value));
+
+                console.log(value);
+                if (field === 'Result') {
+                    obj.update({ Result: value.value });
+                }                
+            });           
+        });
+
+    </script>
+
+</body>
+</html>

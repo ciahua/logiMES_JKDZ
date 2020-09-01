@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>工序管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">工序管理</div>
+        <div class="layui-card-body">
+            <span id="tbdevicelist"></span>
+            <table class="layui-table" id="idTest" lay-filter="demo"></table>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="addNew">新增</button>
+            </div>
+        </script>
+
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+    </div>
+
+
+    <script src="../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <script src="../Scripts/mestools.js"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['tree', 'util', 'table'], function () {
+            var table = layui.table;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+            var colsContent = [
+                //{ type: 'checkbox', fixed: 'left' }
+                { type: 'numbers', fixed: 'left' }
+                , { field: 'Id', width: 80, sort: true, fixed: true, title: 'ID' }
+                , { field: 'StaCode', sort: true, title: '工序代号', align:'center' }
+                , { field: 'StaName', minWidth: 120, sort: true, title: '工序名称', align: 'center'}
+                , { field: 'Device', width: 120,  sort: true, title: '工序设备', align: 'center' }
+                , { field: 'Ip', width: 120, sort: true, title: 'IP', align: 'center' }
+                , { field: 'StaDescribe', minWidth: 400,  sort: true, title: '工序描述', align: 'center' }
+                , { fixed: 'right', minWidth: 150, align: 'center', toolbar: '#barDemo', title: '操作' }];
+
+            var tn = $("#tbdevicelist").attr('id');//存储表名
+            colsContent = MesTools.GetHideCols(tn, colsContent, $);
+
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#idTest'
+                , id: 'idTest1'
+                , url: '../Handlers/Handler-stations.ashx'
+                , where: { actid: 'getTable' }
+                , cols: [colsContent]
+                , height: 540
+                , page: true
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: ['filter', 'print', 'exports', {
+                    title: '保存列设置' //标题
+                    , layEvent: 'LAYTABLE_TIPS' //事件名，用于 toolbar 事件中使用
+                    , icon: 'layui-icon-tips' //图标类名
+                }]
+            });            
+
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        //var data = checkStatus.data;
+                        //layer.alert(JSON.stringify(data));
+                        //页面层
+
+                        layer.open({
+                            title: '添加型号',
+                            type: 2,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['800px', '500px'], //宽高
+                            content: 'staadd.html'                            
+                        });
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.msg('已保存列设置');
+                        MesTools.SetHideCols('idTest1', tn, table);
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../Handlers/Handler-stations.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+
+                    layer.open({
+                        title: '编辑型号',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['800px', '500px'], //宽高
+                        content: 'staedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对
+                            body.find("input[name='id']").val(data.Id);                         
+                            body.find("input[name='stacode']").val(data.StaCode);
+                            body.find("input[name='staname']").val(data.StaName);  
+                            body.find("input[name='device']").val(data.Device);  
+                            body.find("input[name='ip']").val(data.Ip);
+                            body.find("textarea[name='desc']").val(data.StaDescribe);
+                        }
+                    });
+                }
+            });            
+        });
+    </script>
+
+</body>
+</html>

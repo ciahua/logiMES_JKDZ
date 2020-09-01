@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="../layuiadmin/layui/css/layui.css" media="all">
+</head>
+<body>
+    <form class="layui-form" action="" method="post" style="margin:10px" lay-filter="example">
+        <div class="layui-form-item">
+            <label class="layui-form-label">产品型号 *</label>
+            <div class="layui-input-inline">
+                <select name="model" lay-verify="required" lay-filter="aihao">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">工序名称 *</label>
+            <div class="layui-input-inline">
+                <select name="station" lay-verify="required" lay-filter="sta">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">文件名称 *</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="filename" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">文件描述</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" class="layui-textarea" name="desc"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <!--<label class="layui-form-label">产品型号 *</label>-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">来源 *</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" checked="" name="src" lay-skin="switch" lay-filter="switchTest" lay-text="本地|网络">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" id="upload">
+            <div class="layui-inline">
+                <label class="layui-form-label">上传文件 *</label>
+                <div class="layui-input-inline">
+                    <button type="button" class="layui-btn" id="uploadfile"><i class="layui-icon"></i>上传文件</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <!--<div class="layui-inline">-->
+            <label class="layui-form-label">文件链接 *</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" lay-verify="required" autocomplete="off" class="layui-input" readonly>
+            </div>
+            <!--</div>-->
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            </div>
+        </div>
+    </form>
+
+    <script src="../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['form', 'layedit', 'laydate', 'upload'], function() {
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , upload = layui.upload
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+            //获取产品型号
+            $.ajax({
+                url: '../Handlers/Handler-models.ashx',
+                data: { actid: 'getModelListTable' },
+                success: function (res) {
+                    var data = JSON.parse(res).data;
+                    $.each(data, function (i, o) {
+                        $('select[name="model"]').append('<option value="' + o.Model + '">' + o.Model + '</option>');
+                    });
+                    form.render('select');
+                    //console.log(data);
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+
+            //获取工序列表
+            $.ajax({
+                url: '../Handlers/Handler-stations.ashx',
+                data: { actid: 'getStationListTable' },
+                success: function (res) {
+                    var data = JSON.parse(res).data;
+                    $.each(data, function (i, o) {
+                        $('select[name="station"]').append('<option value="' + o.StaCode + '">' + o.StaCode + '</option>');
+                    });
+                    form.render('select');
+                    //console.log(data);
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+
+            //表单
+            form.render();
+
+            //日期
+            laydate.render({
+                elem: '#date'
+            });
+            laydate.render({
+                elem: '#date1'
+            });
+            
+            //自定义验证规则
+            form.verify({
+                title: function (value) {
+                    if (value.length < 5) {
+                        return '标题至少得5个字符啊';
+                    }
+                }
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+                , content: function (value) {
+                    layedit.sync(editIndex);
+                }
+            });
+
+            //监听指定开关
+            form.on('switch(switchTest)', function (data) {
+                //layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                //    offset: '6px'
+                //});
+                if (!this.checked) {
+                    $("#upload").attr("style", "display:none;");
+                    $("input[name='url']").attr("readonly", false);
+                    layer.tips('温馨提示：请填写产品文件的链接地址', data.othis);
+                } else {
+                    $("#upload").attr("style", "display:true;");
+                    $("input[name='url']").attr("readonly", true);
+                    layer.tips('温馨提示：请从本地上传产品文件', data.othis);
+                }
+            });
+
+            //指定允许上传的文件类型
+            upload.render({
+                elem: '#uploadfile'
+                , url: '../Handlers/Handler-models.ashx' //改成您自己的上传接口
+                , data: { actid: 'uploadFile' }
+                , accept: 'file' //普通文件
+                , done: function (res) {
+                    layer.msg('上传成功');
+                    //console.log(res);
+                    $("input[name='url']").val(res.data.src);
+                }
+            });
+
+            //监听提交
+            form.on('submit(demo1)', function (data) {
+                //layer.alert(JSON.stringify(data.field), {
+                //    title: '最终的提交信息'
+                //});
+                $.ajax({
+                    url: '../Handlers/Handler-models.ashx',
+                    data: { actid: 'insFileTable', data:JSON.stringify(data.field) },
+                    success: function (res) {
+                        alert("提交成功！");
+                        //假设这是iframe页
+                        window.parent.location.reload();//刷新父页面
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    },
+                    error: function (e) {
+                        console.log(e);
+                        alert('提交失败！');
+                    }
+                });
+                return false;
+            });
+
+            //表单赋值
+            var testdata = {
+                "devname": "贤心" // "name": "value"
+                , "devno": "123456"
+                , "interest": 1
+                , "like[write]": true //复选框选中状态
+                , "close": true //开关状态
+                , "sex": "女"
+                , "desc": "我爱 layui"
+            };
+
+            layui.$('#LAY-component-form-setval').on('click', function () {
+                form.val('example', testdata);
+            });
+
+            //表单取值
+            layui.$('#LAY-component-form-getval').on('click', function () {
+                var data = form.val('example');
+                alert(JSON.stringify(data));
+            });
+        });
+    </script>
+</body>
+</html>

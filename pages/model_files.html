@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>产品资料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">产品资料</div>
+        <div class="layui-card-body">
+            <span id="tbdevicelist"></span>
+            <table class="layui-table" id="idTest" lay-filter="demo"></table>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="addNew">新增</button>
+            </div>
+        </script>
+
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+    </div>
+
+
+    <script src="../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <script src="../Scripts/mestools.js"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['tree', 'util', 'table'], function () {
+            var table = layui.table;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+            var colsContent = [
+                { type: 'numbers', fixed: 'left' }
+                , { field: 'Id', width: 80, sort: true, fixed: true, align: 'center', title: 'ID' }
+                , { field: 'Model', width: 140, sort: true, align: 'center', title: '产品型号' }
+                , { field: 'Station', width: 140, sort: true, align: 'center', title: '工序名称' }
+                , { field: 'FileName', minWidth: 120, sort: true, align: 'center', title: '文件名称' }
+                , { field: 'FileDesc', align: 'center', title: '文件描述' }
+                , {
+                    field: 'Source', width: 60, align: 'center', title: '来源', templet: function (d) {
+                        if (d.Source == 'on') {
+                            return '本地';
+                        } else if (d.Source == 'off') {
+                            return '网络';
+                        } else {
+                            return '';
+                        }
+                    }
+                }
+                , { field: 'Url', minWidth: 450, align: 'center', title: '链接' }
+                , { field: 'FileTime', sort: true, align: 'center', title: '上传时间' }
+                , { fixed: 'right', minWidth: 120, align: 'center', toolbar: '#barDemo', title: '操作' }];
+
+            var tn = $("#tbdevicelist").attr('id');//存储表名
+            colsContent = MesTools.GetHideCols(tn, colsContent, $);
+
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#idTest'
+                , id: 'idTest1'
+                , url: '../Handlers/Handler-models.ashx'
+                , where: { actid: 'getFileTable' }
+                , cols: [colsContent]
+                , height: 540
+                , page: true
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: ['filter', 'print', 'exports', {
+                    title: '保存列设置' //标题
+                    , layEvent: 'LAYTABLE_TIPS' //事件名，用于 toolbar 事件中使用
+                    , icon: 'layui-icon-tips' //图标类名
+                }]
+            });
+
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        //var data = checkStatus.data;
+                        //layer.alert(JSON.stringify(data));
+                        //页面层
+
+                        layer.open({
+                            title: '添加文件',
+                            type: 2,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['800px', '600px'], //宽高
+                            content: 'modfileadd.html'
+                        });
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.msg('已保存列设置');
+                        MesTools.SetHideCols('idTest1', tn, table);
+                        break;
+                };
+            });
+
+            var models = null;
+
+            //获取产品型号
+            $.ajax({
+                url: '../Handlers/Handler-models.ashx',
+                data: { actid: 'getModelListTable' },
+                async: false,
+                success: function (res) {
+                    var data = JSON.parse(res).data;
+                    models = data;
+                    //$.each(data, function (i, o) {
+                    //    $('select[name="model"]').append('<option value="' + o.Model + '">' + o.Model + '</option>');
+                    //});
+                    //form.render('select');
+                    //alert('载入型号');
+                    //console.log(data);
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+
+            var stationlist = null;
+            //获取工序列表
+            $.ajax({
+                url: '../Handlers/Handler-stations.ashx',
+                data: { actid: 'getStationListTable' },
+                success: function (res) {
+                    var data = JSON.parse(res).data;
+                    stationlist = data;
+                    //$.each(data, function (i, o) {
+                    //    $('select[name="station"]').append('<option value="' + o.StaCode + '">' + o.StaCode + '</option>');
+                    //});
+                    //form.render('select');
+                    //console.log(data);
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../Handlers/Handler-models.ashx',
+                            data: { actid: 'delFileTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                                //假设这是iframe页
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //parent.layer.close(index); //再执行关闭
+
+                                ////这里以搜索为例
+                                //tableIns.reload({
+                                //    where: { actid: 'getTable' }
+                                //    , page: {
+                                //        curr: 1 //重新从第 1 页开始
+                                //    }
+                                //});
+
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+
+                    layer.open({
+                        title: '编辑文件',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['800px', '600px'], //宽高
+                        content: 'modfileedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            body.find("input[name='id']").val(data.Id);
+
+                            $.each(models, function (i, o) {
+                                if (o.Model == data.Model) {
+                                    body.find('select[name="model"]').append('<option value="' + o.Model + '" selected = "selected">' + o.Model + '</option>');
+                                } else {
+                                    body.find('select[name="model"]').append('<option value="' + o.Model + '">' + o.Model + '</option>');
+                                }
+
+                            });
+                            $.each(stationlist, function (i, o) {
+                                if (o.StaCode == data.Station) {
+                                    body.find('select[name="station"]').append('<option value="' + o.StaCode + '" selected="selected">' + o.StaCode + '</option>');
+                                } else {
+                                    body.find('select[name="station"]').append('<option value="' + o.StaCode + '">' + o.StaCode + '</option>');
+                                }
+                            });
+
+                            body.find("select[name='station']").val(data.Station);
+
+                            body.find("input[name='filename']").val(data.FileName);
+                            body.find("textarea[name='desc']").val(data.FileDesc);
+                            if (data.Source == 'off') {                                
+                                body.find("#upload").attr("style", "display:none;");
+                                body.find("input[name='src']").removeAttr('checked');
+                                body.find("input[name='url']").attr("readonly", false);
+                            } else if (data.Source == 'on') {      
+                                body.find("#upload").attr("style", "display:true;");
+                                body.find("input[name='src']").attr("checked", "checked");
+                                body.find("input[name='url']").attr("readonly", true);
+                            }
+                            
+                            body.find("input[name='url']").val(data.Url);
+
+                            var iframeWindow = layero.find('iframe')[0].contentWindow;
+                            iframeWindow.layui.form.render();
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

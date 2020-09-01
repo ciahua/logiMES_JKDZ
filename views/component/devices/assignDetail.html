@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+</head>
+<body>
+    <form class="layui-form" id="devinfo" action="" style="margin:10px" lay-filter="example">
+
+        <div class="layui-form-item">
+            <div class="layui-inline" style="display:none">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="id" lay-verify="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">设备号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="devno" lay-verify="required" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">设备名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="devname" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">规格型号</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="devtype" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">安装地点</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="devdept" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">故障类型</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="reserved2" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">报修人</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="Reporter" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+
+
+            <div class="layui-inline">
+                <label class="layui-form-label">报修时间</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="ReportTime" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+
+
+            <div class="layui-inline">
+                <label class="layui-form-label">维修状态</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="IssueState" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">故障描述</label>
+                <div class="layui-input-block">
+                    <textarea name="IssueDesc" placeholder="" class="layui-textarea" readonly="readonly"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="layui-form-item"> 
+            <div class="layui-inline">
+                <label class="layui-form-label">维修人员</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="Repairman" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div> 
+            <div class="layui-inline">
+                <label class="layui-form-label">派单时间</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="TakeJobTime" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div> 
+            <div class="layui-inline">
+                <label class="layui-form-label">完成时间</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="RepairTime" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div> 
+            <div class="layui-form-item layui-form-text" style ="display :none">
+                <label class="layui-form-label">维修内容</label>
+                <div class="layui-input-block">
+                    <textarea name="RepairDesc" placeholder="" class="layui-textarea" readonly="readonly"></textarea>
+                </div>
+            </div> 
+
+            <div class="layui-form-text">
+                <label class="layui-form-label">维修过程描述</label>
+                <div class="layui-input-block">
+                    <textarea name="reserved3" placeholder="" class="layui-textarea" readonly="readonly"></textarea>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="layui-form-item">
+
+
+            <div class="layui-inline">
+                <label class="layui-form-label">验收人员</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="Confirmor" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">验收时间</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="ConfirmTime" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">验收备注</label>
+                <div class="layui-input-block">
+                    <textarea name="ConfirmDesc" placeholder="" class="layui-textarea" readonly="readonly"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <!-- <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-setval">赋值</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-getval">取值</button>-->
+            </div>
+        </div>
+    </form>
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+         
+    </script>
+</body>
+</html>

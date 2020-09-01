@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>操作点检编辑</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">操作点检</div>
+        <div class="layui-card-body">
+            <div class="test-table-reload-btn" style="margin-bottom: 10px;">
+                搜索内容：
+                <div class="layui-inline">
+                    <input class="layui-input" name="id" id="test-table-demoReload" autocomplete="off">
+                </div>
+                <button class="layui-btn" data-type="reload">搜索</button>
+            </div>
+
+            <table class="layui-table" id="demo" lay-filter="demo"></table>
+            <p>* 点检结果：正常、不正常、修理完毕、停工</p>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="addNew">新增</button>
+            </div>
+        </script>
+        <script type="text/html" id="selectSex">
+            <div class="layui-input-block">
+                <select name='Sex' lay-filter='Sex'>
+                    <option value=""></option>
+                    <option value="0">√正常</option>
+                    <option value="1">×不正常</option>
+                    <option value="2">⊙修理完毕</option>
+                    <option value="3">△停工</option>
+                </select>
+            </div>
+        </script>
+        <script type="text/html" id="barDemo">
+            <!--<a class="layui-btn layui-btn-xs" lay-event="check">提交</a>-->
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+        <script type="text/html" id="titleTipl">
+            <a href="javascript:;" data-d="{{d.DeviceId}}" οnmοuseοver="show_shopm(this)">{{d.DeviceId}}</a>
+        </script>
+    </div>
+
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script type="text/javascript">
+        layui.use(['tree', 'util', 'layer', 'element', 'jquery', 'form', 'table'], function (table, layer, element, $, form) {
+            var table = layui.table;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+            var selectParams = [
+                { name: 1, value: "正常" },
+                { name: 2, value: "异常" },
+            ];
+
+            $('#test-table-demoReload').val($.trim(layui.data('LocalDevice').deviceid));
+            setTimeout(function () {
+                active.reload();
+            }, 100);
+
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#demo'
+                , url: '../../../Handlers/Handler-devicecheck.ashx' //设置异步接口
+                , where: { actid: 'getCheckTable' }
+                , cols: [[
+                    { checkbox: true, fixed: true, style: 'background-color: #eee;' }
+                    //, { field: 'Id', width: 80, sort: true, fixed: true, style: 'background-color: #eee;', title: 'ID' }
+                    , { field: 'DeviceId', sort: true, style: 'background-color: #eee;', title: '设备号' }
+                    , { field: 'DeviceName', minWidth: 120, sort: true, style: 'background-color: #eee;', title: '设备名称' }
+                    , { field: 'Unit', sort: true, style: 'background-color: #eee;', title: '安装地点' }
+                    , { field: 'Category', style: 'background-color: #eee;', title: '项目' }
+                    , { field: 'Location', style: 'background-color: #eee;', title: '部位' }
+                    , { field: 'Cycle', style: 'background-color: #eee;', title: '周期' }
+                    //, { field: 'Result', title: '点检结果', align:'center', templet: '#selectSex' }
+                    //, { field: 'Result', style: 'background-color: #009688; color: #fff;', title: '点检结果', align: 'center', edit: 'text' }
+                    //, { field: 'Result', style: 'background-color: #009688; color: #fff;', title: '点检结果', align: 'center', edit: 'select', data: selectParams }
+                    , { fixed: 'right', minWidth: 150, align: 'center', toolbar: '#barDemo', title: '操作' }
+                ]]
+                , id: 'idTest'
+                , height: 540
+                , page: true
+                , toolbar: '#toolbarDemo'
+            });
+
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../../../Handlers/Handler-devicelist.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                                //假设这是iframe页
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //parent.layer.close(index); //再执行关闭
+
+                                ////这里以搜索为例
+                                //tableIns.reload({
+                                //    where: { actid: 'getTable' }
+                                //    , page: {
+                                //        curr: 1 //重新从第 1 页开始
+                                //    }
+                                //});
+
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+
+                    layer.open({
+                        title: '编辑设备',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['500px', '450px'], //宽高
+                        content: 'devcheckedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            var formedit = iframeWin.layui.form;
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='devno']").val(data.DeviceId);
+                            body.find("input[name='devname']").val(data.DeviceName);
+                            body.find("input[name='devdept']").val(data.Unit);
+                            body.find("select[name='item']").val(data.Category);
+                            body.find("input[name='location']").val(data.Location);
+                            body.find("select[name='cycle']").val(data.Cycle);
+                            formedit.render();
+                        }
+                    });
+                } else if (obj.event === 'check') {
+                    //layer.alert(JSON.stringify(data));
+                    console.log(data.Result);
+                    var res = data.Result;
+                    if (res == null || $.trim(res) == '') {
+                        layer.msg('提交字段为空！');
+                        return;
+                    }
+                    var u = layui.data('login');
+                    var realName = u.realname;
+                    
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicecheck.ashx',
+                        data: { actid: 'insTable', data: JSON.stringify(data), workname: realName },
+                        success: function (res) {
+                            layer.msg('提交成功');
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                }
+            });
+
+            form.on('select(Sex)', function (data) {
+                //debugger;
+                console.log("data-----" + JSON.stringify(table.cache));
+                var elem = $(data.elem);
+                var trElem = elem.parents('tr');
+                var tableData = table.cache['demo'];
+                console.log(elem);
+                console.log(trElem);
+                console.log(tableData);
+                console.log(data);
+                console.log(data.value);
+                // 更新到表格的缓存数据中，才能在获得选中行等等其他的方法中得到更新之后的值
+                tableData[trElem.data('index')][elem.attr('name')] = data.value;
+                // 其他的操作看需求 TODO
+                form.render('select');
+            });
+
+            // 监听修改update到表格中
+            form.on('select(testSelect)', function (data) {
+                //debugger;
+                var elem = $(data.elem);
+                var trElem = elem.parents('tr');
+                var tableData = table.cache['demo'];
+                // 更新到表格的缓存数据中，才能在获得选中行等等其他的方法中得到更新之后的值
+                tableData[trElem.data('index')][elem.attr('name')] = data.value;
+                // 其他的操作看需求 TODO
+            });
+
+            //执行搜索
+            var $ = layui.$, active = {
+                reload: function () {
+                    var demoReload = $('#test-table-demoReload');
+
+                    //执行重载
+                    table.reload('idTest', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            actid: 'searchTable'
+                            , searchkey: demoReload.val()
+                        }
+                    });
+                }
+            };
+
+            $('.test-table-reload-btn .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+                //alert($("#test-table-demoReload").val());
+
+            });
+
+            //显示描述
+            function show_shopm(t) {
+                var row = $(t).attr('data-d'); //获取显示内容
+                //小tips
+                layer.tips('Hello', t, {
+                    tips: [1, '#3595CC'],
+                    time: 4000
+                })
+            };
+
+            //--------------------下拉框------------------
+            table.on('edit(demo)', function (obj) {
+
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.Id + '] ' + field + ' 字段更改为：' + value);
+                layer.msg('[ID: ' + data.Id + '] ' + field + ' 字段更改为：' + JSON.stringify(value));
+
+
+                console.log(value);
+                if (field === 'Result') {
+                    obj.update({ Result: value.value });
+                }
+
+                if (field === 'duoxuan') {
+                    obj.update({ duoxuan: '多选' });
+                }
+
+                if (field === 'birthday') {
+                    obj.update({ birthday: value });
+                }
+            });
+        });
+
+    </script>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+</body>
+</html>

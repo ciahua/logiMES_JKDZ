@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>电量监控</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+   
+ 
+
+    <div class="layui-fluid">
+
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="test2">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">周期</label>
+                    <div class="layui-input-block">
+                        <select name="sex" lay-filter="aihao"> 
+                            <option value="14">小时</option>
+                            <option value="11">天数</option>
+                            <option value="8">月数</option>
+                            <option value="5">年数</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline" id="datime_p">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 300px;" id="datime">
+                        <input type="text" id="price_min" name="datetime" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+        <div class="layui-card">
+            <div class="layui-card-header">标准柱状图</div>
+            <div class="layui-card-body">
+
+                <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-normcol">
+                    <div carousel-item id="LAY-index-normcol">
+                        <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <table id="demo" lay-filter="test"></table>
+
+                    <!-- <div class="layui-col-md3">
+        <table id="demo1" lay-filter="test1"></table>
+    </div>
+    <div class="layui-col-md9">
+        <table id="demo" lay-filter="test"></table>
+    </div>-->
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <script>
+
+
+        var stime, stype;
+        function dateFormat(fmt, date) {
+            let ret;
+            const opt = {
+                "Y+": date.getFullYear().toString(),        // 年
+                "m+": (date.getMonth() + 1).toString(),     // 月
+                "d+": date.getDate().toString(),            // 日
+                "H+": date.getHours().toString(),           // 时
+                "M+": date.getMinutes().toString(),         // 分
+                "S+": date.getSeconds().toString()          // 秒
+                // 有其他格式化字符需求可以继续添加，必须转化成字符串
+            };
+            for (let k in opt) {
+                ret = new RegExp("(" + k + ")").exec(fmt);
+                if (ret) {
+                    fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+                };
+            };
+            return fmt;
+        }
+
+
+
+        var echnormcol = [], normcol = [
+            {
+                title: {
+                    text: '数据报表',
+                    subtext: '能耗(度)'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['能耗(度)']
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '能耗(度)',
+                        type: 'bar',
+                        data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+                        markPoint: {
+                            data: [
+                                { type: 'max', name: '最大值' },
+                                { type: 'min', name: '最小值' }
+                            ]
+                        },
+                        markLine: {
+                            data: [{ type: 'average', name: '平均值' }]
+                        }
+                    } 
+                ]
+            }
+        ];
+    
+    
+
+
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index','table', 'senior', 'laydate','echarts'], function () {
+            
+            
+            var stars = dateFormat("YYYY-mm-01 00:00:00", new Date());
+            var ends = dateFormat("YYYY-mm-dd HH:MM:SS", new Date());
+            var types = "11";
+            //load(stars, ends, types);
+            layui.form.val("test2", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                "datetime": stars + " - " + ends// "name": "value"
+                , "sex": 11
+            });
+
+            
+
+             layui.form.on('submit(LAY-user-front-search)', function (data) { 
+                var field = data.field; 
+
+                if (field.datetime.length > 0) {
+                    console.log(field);
+                    stime = field.datetime;
+                    stype = field.sex;
+                    var star    = field.datetime.split(" - ")[0];
+                    var end     = field.datetime.split(" - ")[1];
+                    var type = field.sex;
+                    load(star, end, type);
+                    console.log(field);  
+                     
+                } 
+             }); 
+
+
+            layui.form.on('select(aihao)',function(data){
+                //console.log(data);
+                //console.log(data.elem); //得到select原始DOM对象
+                //console.log(data.value); //得到被选中的值
+                //console.log(data.othis); //得到美化后的DOM对象 
+                document.getElementById("datime").remove();
+                document.getElementById("datime_p").append(layui.$('<div class="layui-input-inline" style="width: 300px;" id="datime">  <input type="text" id="price_min" name="datetime" placeholder="" autocomplete="off" class="layui-input">   </div>')[0]) 
+                if (data.value >= 11) {
+                     layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'datetime'
+                        //, value: new Date()  
+                        , range: true
+                    });
+                } else if (data.value == 8) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'month'
+                        //, value: new Date()
+                        , range: true
+                    });
+                } else if (data.value == 5) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'year'
+                        //, value: new Date()
+                        , range: true
+                    });
+                }
+            });
+          
+            setTimeout(function () {
+                layui.laydate.render({
+                    elem: '#price_min' //指定元素
+                    , type: 'datetime'
+                    , range: true
+                    //, value: [new Date(),new Date()]
+                });
+                load(stars,ends,types);
+             });
+
+        });
+
+
+        var load = function (stars, ends, types) {
+ 
+            var $ = layui.$; 
+            var table = layui.table;
+            var data = JSON.parse($.ajax({ url: '../../../Handlers/Handler-energy.ashx?actid=getReport&star=' + stars + '&end=' + ends + '&type=' + types + '', async: false }).responseText).data;
+            console.log(data);
+
+
+            var cos = []; 
+            var dats = []; 
+            for (k in data) {
+                cos.push(data[k].dats.substring(data[k].dats.length-5, data[k].dats.length));
+                dats.push(data[k].val);
+            } 
+            normcol[0].xAxis[0].data = cos;
+            normcol[0].series[0].data = dats;
+
+            //console.log(cos); 
+            //第一个实例
+            table.render({ 
+                elem: '#demo'
+                , page: true 
+                , toolbar: '#tool'
+                , height: 'full-450'
+                , data: data
+                , cols: [[{ field: "dats", fixed: "left", title: "时间", width: 180 },
+                        { field: "val", title: "能耗(度)"}]]
+            });   
+
+
+             var $ = layui.$ 
+                , echarts = layui.echarts; 
+            setTimeout(function () {
+                 var elemNormcol = $('#LAY-index-normcol').children('div')
+                 var renderNormcol = function(index){
+                   echnormcol[index] = echarts.init(elemNormcol[index], layui.echartsTheme);
+                   echnormcol[index].setOption(normcol[index]);
+                   window.onresize = echnormcol[index].resize;
+                }; 
+                 renderNormcol(0);
+            }); 
+
+            
+
+
+            layui.table.on('toolbar()', function (obj) {
+                var config = obj.config;
+                var btnElem = $(this);
+                var tableId = config.id;
+                var tableView = config.elem.next();
+                switch (obj.event) {
+                    case 'LAYTABLE_COLS':
+                    // 给筛选列添加全选还有反选的功能
+                    var panelElem = btnElem.find('.layui-table-tool-panel');
+                    var checkboxElem = panelElem.find('[lay-filter="LAY_TABLE_TOOL_COLS"]');
+                    var checkboxCheckedElem = panelElem.find('[lay-filter="LAY_TABLE_TOOL_COLS"]:checked');
+                    $('<li class="layui-form" lay-filter="LAY_TABLE_TOOL_COLS_FORM">' +
+                        '<input type="checkbox" lay-skin="primary" lay-filter="LAY_TABLE_TOOL_COLS_ALL" '
+                        + ((checkboxElem.length === checkboxCheckedElem.length) ? 'checked' : '') + ' title="全选">' +
+                        '<span class="LAY_TABLE_TOOL_COLS_Invert_Selection">反选</span></li>')
+                        .insertBefore(panelElem.find('li').first())
+                        .on('click', '.LAY_TABLE_TOOL_COLS_Invert_Selection', function (event) {
+                            layui.stope(event);
+                            // 反选逻辑
+                            panelElem.find('[lay-filter="LAY_TABLE_TOOL_COLS"]+').click();
+                        });
+                    layui.form.render('checkbox', 'LAY_TABLE_TOOL_COLS_FORM');
+                    break;
+                }
+            });
+
+            // 监听筛选列panel中的全选
+            layui.form.on('checkbox(LAY_TABLE_TOOL_COLS_ALL)', function (obj) {
+            $(obj.elem).closest('ul')
+                .find('[lay-filter="LAY_TABLE_TOOL_COLS"]' + (obj.elem.checked ? ':not(:checked)' : ':checked') + '+').click();
+            });
+
+            // 监听筛选列panel中的单个记录的change
+            $(document).on('change', 'input[lay-filter="LAY_TABLE_TOOL_COLS"]', function (event) {
+            var elemCurr = $(this);
+            // 筛选列单个点击的时候同步全选的状态
+            $('input[lay-filter="LAY_TABLE_TOOL_COLS_ALL"]')
+                .prop('checked',
+                elemCurr.prop('checked') ? (!$('input[lay-filter="LAY_TABLE_TOOL_COLS"]').not(':checked').length) : false);
+                form.render('checkbox', 'LAY_TABLE_TOOL_COLS_FORM');
+            });
+
+
+        };
+
+        
+    </script>
+</body>
+</html>

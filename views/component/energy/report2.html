@@ -1,0 +1,446 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>电量监控</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <style>
+       
+    </style>
+</head>
+<body>
+   
+ 
+
+    <div class="layui-fluid">
+
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="test2">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">周期</label>
+                    <div class="layui-input-block">
+                        <select name="sex" lay-filter="aihao"> 
+                            <option value="11">天数</option>
+                            <option value="8">月数</option>
+                            <option value="5">年数</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!--<div class="layui-inline">
+                    <label class="layui-form-label">日期</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <input type="text" id="timeid" name="timename" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>-->
+
+                <div class="layui-inline" id="datime_p">
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline" style="width: 300px;" id="datime">
+                        <input type="text" id="price_min" name="datetime" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-user-front-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+        <div class="layui-card">
+            <div class="layui-card-header">标准柱状图</div>
+            <div class="layui-card-body">
+
+                <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-normcol">
+                    <div carousel-item id="LAY-index-normcol">
+                        <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="layui-col-md3">
+                        <div id="test12" class="demo-tree-more" style="height: 530px; overflow: scroll;"></div>
+                    </div>
+                    <div class="layui-col-md9">
+                        <table id="demo" lay-filter="test"></table>
+                    </div>
+
+                    <!-- <div class="layui-col-md3">
+        <table id="demo1" lay-filter="test1"></table>
+    </div>
+    <div class="layui-col-md9">
+        <table id="demo" lay-filter="test"></table>
+    </div>-->
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <script> 
+        var stime, stype;
+        function dateFormat(fmt, date) {
+            let ret;
+            const opt = {
+                "Y+": date.getFullYear().toString(),        // 年
+                "m+": (date.getMonth() + 1).toString(),     // 月
+                "d+": date.getDate().toString(),            // 日
+                "H+": date.getHours().toString(),           // 时
+                "M+": date.getMinutes().toString(),         // 分
+                "S+": date.getSeconds().toString()          // 秒
+                // 有其他格式化字符需求可以继续添加，必须转化成字符串
+            };
+            for (let k in opt) {
+                ret = new RegExp("(" + k + ")").exec(fmt);
+                if (ret) {
+                    fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+                };
+            };
+            return fmt;
+        } 
+        //{"code":0,"msg":"","data":[{"date":"2020-08-01","devname":"冠标大拉机","val":10.83},{"date":"2020-08-02","devname":"冠标大拉机","val":0.0},{"date":"2020-08-03","devname":"冠标大拉机","val":2331.78},{"date":"2020-08-04","devname":"冠标大拉机","val":4806.26},{"date":"2020-08-05","devname":"冠标大拉机","val":4266.25},{"date":"2020-08-06","devname":"冠标大拉机","val":1543.33},{"date":"2020-08-07","devname":"冠标大拉机","val":2159.02},{"date":"2020-08-08","devname":"冠标大拉机","val":4328.66},{"date":"2020-08-09","devname":"冠标大拉机","val":3118.95},{"date":"2020-08-10","devname":"冠标大拉机","val":2100.2},{"date":"2020-08-11","devname":"冠标大拉机","val":3119.07},{"date":"2020-08-12","devname":"冠标大拉机","val":1909.32}]}
+        var echnormcol = [], normcol = [
+            {
+                title: {
+                    text: '数据报表',
+                    subtext: '电耗(度)'
+                },
+                grid: {
+                left: '10%',
+                bottom:'35%'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['能耗(度)']
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                        ,axisLabel: {  
+                            interval:0,  
+                            rotate: 25,
+                            margin: 2,
+                            textStyle:{
+                                fontWeight:"bolder",
+                                color: "#000000",
+                                fontSize:"10px"
+                            }
+
+                            /* formatter:function(value)
+                            {
+                                debugger
+                                var ret = "";//拼接加\n返回的类目项
+                                var maxLength = 1;//每项显示文字个数
+                                var valLength = value.length;//X轴类目项的文字个数
+                                var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
+                                if (rowN > 1)//如果类目项的文字大于3,
+                                {
+                                    for (var i = 0; i < rowN; i++) {
+                                        var temp = "";//每次截取的字符串
+                                        var start = i * maxLength;//开始截取的位置
+                                        var end = start + maxLength;//结束截取的位置
+                                        //这里也可以加一个是否是最后一行的判断，但是不加也没有影响，那就不加吧
+                                        temp = value.substring(start, end) + "\n";
+                                        ret += temp; //凭借最终的字符串
+                                    }
+                                    return ret;
+                                }
+                                else {
+                                    return value;
+                                }
+                            }*/
+                        }
+                        
+                    }
+                ],
+               
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '能耗(度)',
+                        type: 'bar',
+                        data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+                        markPoint: {
+                            data: [
+                                { type: 'max', name: '最大值' },
+                                { type: 'min', name: '最小值' }
+                            ]
+                        },
+                        markLine: {
+                            data: [{ type: 'average', name: '平均值' }]
+                        }
+                    } 
+                ]
+            }
+        ];
+        var reportdata = [];
+        var loadtree=function(){ 
+            var $ = layui.$; 
+            
+            var tree = layui.tree
+            
+            var devslist = JSON.parse($.ajax({ url: '../../../Handlers/Handler-devicelist.ashx?actid=getTable&page=1&limit=1000', async: false }).responseText).data 
+            treedate = [];
+            var typestr = [];
+            typestr["CL"] = "成缆";
+            typestr["LL"] = "连硫";
+            typestr["BZ"] = "编织";
+            typestr["JX"] = "绞线";
+            typestr["JS"] = "挤塑";
+            typestr["LS"] = "拉丝";
+            var ids = 2;
+            var typedata = [];
+            for (k in devslist) {
+                var types = devslist[k].DevNo.substring(0, 2);
+                if (typedata[types] == null) {
+                    typedata[types] = {
+                        title: typestr[types]
+                        , id: ids++
+                        , checked: false
+                        , spread: true
+                        , children: []
+                    }
+                } 
+                typedata[types].children.push({ title:devslist[k].DevName ,id:ids++ , checked: false});
+            }
+            //console.log(typedata);
+            for (k in typedata) {
+                treedate.push(typedata[k]);
+            }
+
+
+            var tmp = 0;
+             //基本演示
+            tree.render({
+                elem: '#test12'
+                , data: [{
+                     title: '全选'
+                    , id: 1
+                    , field: ''
+                    , spread: true
+                    , checked: false 
+                    , children: treedate
+                }] //treedate
+                , height: 'full-20'
+                ,showCheckbox: true  //是否显示复选框
+                ,id: 'demoId1'
+                , isJump: true //是否允许点击节点时弹出新窗口跳转 
+                , oncheck: function (obj) {
+                    //layui.$(layui.$(".layui-form-checked")[1]).next()[0].innerText
+                    //layui.$(layui.$(".layui-form-checked")[1]).next()[0].innerText
+                   
+                    report("设备电耗"); 
+                    /**/
+
+
+
+                }
+
+            });
+        }
+    
+
+
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['tree', 'index', 'table'
+            , 'senior'
+            , 'laydate', 'echarts'], function () {
+            
+            
+            var stars = dateFormat("YYYY-mm-01 00:00:00", new Date());
+            //var ends = dateFormat("YYYY-mm-dd HH:MM:SS", new Date());
+            var types = "11";
+            //load(stars, ends, types);
+            layui.form.val("test2", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                //"datetime": stars //+ " - " + ends "name": "value"
+                //,
+                "sex": 11
+            });
+            layui.form.on('select(aihao)',function(data){
+                //console.log(data);
+                //console.log(data.elem); //得到select原始DOM对象
+                //console.log(data.value); //得到被选中的值
+                //console.log(data.othis); //得到美化后的DOM对象 
+                document.getElementById("datime").remove();
+                document.getElementById("datime_p").append(layui.$('<div class="layui-input-inline" style="width: 300px;" id="datime">  <input type="text" id="price_min" name="datetime" placeholder="" autocomplete="off" class="layui-input">   </div>')[0])
+
+                if (data.value == 11) {
+                     layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'datetime'
+                        , value:new Date()  
+                    });
+                } else if (data.value == 8) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'month'
+                        , value:new Date()   
+                    });
+                } else if (data.value == 5) {
+                    layui.laydate.render({
+                        elem: '#price_min' //指定元素
+                        , type: 'year'
+                        , value:new Date()
+                    });
+                }
+            });
+            
+             loadtree();
+             layui.form.on('submit(LAY-user-front-search)', function (data) { 
+                var field = data.field; 
+
+                if (field.datetime.length > 0) {
+                    console.log(field);
+                    stime = field.datetime;
+                    stype = field.sex;
+                    var star    = field.datetime.split(" - ")[0];
+                    //var end     = field.datetime.split(" - ")[1];
+                    var type = field.sex;
+                    load(star, type);
+                    console.log(field);   
+                } 
+            }); 
+          
+            setTimeout(function () {
+                layui.laydate.render({
+                    elem: '#price_min' //指定元素
+                    , type: 'datetime'
+                    , value:new Date()
+                    //, range: true
+                    //, value: [new Date(),new Date()]
+                });
+                layui.tree.setChecked('demoId1', 1);
+                load(stars,types);
+
+                /*layui.laydate.render({
+                    elem: '#timeid' //指定元素
+                    , type: 'datetime'
+                    //, value: [new Date(),new Date()]
+                });*/
+                //load(stars,ends,types);
+             });
+
+        });
+
+
+        var report = function (devName) {
+
+                var keys = [];
+                var tps = layui.$(".layui-form-checked");
+                for (i = 0; i < tps.length; i++) {
+                    if (layui.$(tps[i]).next()[0] != null) {
+                        keys[layui.$(tps[i]).next()[0].innerText] = 1;
+                    }
+                } 
+                //console.log(keys); 
+                var cos = []; 
+                var dats = []; 
+                for (k in reportdata) if(keys[reportdata[k].devname]==1){ 
+                    cos.push(reportdata[k].devname);//.substring(data[k].devname.length-5, data[k].devname.length)
+                    dats.push(reportdata[k].val);
+                }
+
+
+                normcol[0].xAxis[0].data = cos;
+                normcol[0].series[0].data = dats; 
+                normcol[0].legend.data[0] = devName;
+                normcol[0].series[0].name = devName;
+                var $ = layui.$ 
+                    , echarts = layui.echarts; 
+                setTimeout(function () {
+                        var elemNormcol = $('#LAY-index-normcol').children('div')
+                        var renderNormcol = function(index){
+                        echnormcol[index] = echarts.init(elemNormcol[index], layui.echartsTheme);
+                        echnormcol[index].setOption(normcol[index]);
+                        window.onresize = echnormcol[index].resize;
+                    }; 
+                    renderNormcol(0);
+                }); 
+        }
+
+        var load = function (stars, types) {
+ 
+            var $ = layui.$; 
+            var table = layui.table;
+            var data = [];//JSON.parse($.ajax({ url: '../../../Handlers/Handler-energy.ashx?actid=getReport&star=' + stars + '&end=' + ends + '&type=' + types + '', async: false }).responseText).data;
+
+            //if (devName == null) devName = '冠标大拉机';
+            if (layui.$(".layui-form-checked").length != 0) {
+                var devName = layui.$(layui.$(".layui-form-checked")[2]).next()[0].innerHTML; 
+                var dt = JSON.parse($.ajax({ url: '../../../Handlers/Handler-energy.ashx?actId=reportbydate&star=' + stars.substring(0,types-1) + '&type=' + types + '', async: false }).responseText).data; 
+                //console.log(dt);
+                data = dt;
+                table.render({ 
+                    elem: '#demo'
+                    , page: true 
+                    , toolbar: '#tool'
+                    , height: 'full-450'
+                    , data: dt
+                    , cols: [[{ field: "date", fixed: "left", title: "时间", width: 180 },
+                        { field: "devname", title: "设备" },
+                          { field: "val", title: "电耗(度)" },
+                    ]]
+
+                }); 
+                reportdata = dt;  
+                report("设备电耗"); 
+            }
+            
+
+
+
+
+          
+
+            //console.log(cos); 
+            //第一个实例
+             
+
+
+           
+
+ 
+
+
+        };
+
+        
+    </script>
+</body>
+</html>

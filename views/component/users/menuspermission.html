@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>菜单权限</title>
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css">
+</head>
+<body>
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md4">
+                <div class="layui-card">
+                    <div class="layui-card-header">菜单选项</div>
+                    <div class="layui-card-body">
+                        <div id="menu1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md8">
+                <div class="layui-card">
+                    <div class="layui-card-header" id="menu_user" value="">授权用户</div>
+                    <div class="layui-card-body">
+                        <style>
+                            .xm-select-demo {
+                                vertical-align: top;
+                                display: inline-block;
+                                width: 400px;
+                                margin-bottom: 10px;
+                            }
+
+                            .btn {
+                                outline: 0;
+                                display: inline-block;
+                                height: 38px;
+                                line-height: 38px;
+                                padding: 0 18px;
+                                background-color: #009688;
+                                color: #fff;
+                                white-space: nowrap;
+                                text-align: center;
+                                font-size: 14px;
+                                border: none;
+                                border-radius: 2px;
+                                cursor: pointer;
+                                vertical-align: top;
+                                margin-left: 10px;
+                                margin-bottom: 10px;
+                            }
+                        </style>
+                        <div id="users1" class="xm-select-demo"></div>
+                        <button class="btn" id="demo2-getValue">保存选中值</button>
+                        <!--<button class="btn" id="demo2-setValue">赋值</button>-->
+                        <button class="btn" id="demo2-clear">清空</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script src="../../../Scripts/xm-select.js"></script>
+    <script>
+		layui.use(['tree', 'form'], function () {
+			var tree = layui.tree, $ = layui.$, form = layui.form;
+			var menuData, userData;
+			$.ajax({
+				url: '../../../Handlers/Handler-menuspermission.ashx',
+				data: { actid: 'getMenus' },
+				success: function (res) {
+					var d = JSON.parse(res);
+					menuData = d.data;
+					menuData = MenuTree(menuData);
+
+					//渲染
+					var inst = xmSelect.render({
+						el: '#menu1',
+						model: { label: { type: 'text' } },
+						radio: true,
+						clickClose: true,
+						tree: {
+							show: true,
+							strict: false,
+							expandedKeys: true,
+						},
+						height: 'auto',
+						data: menuData
+						, on: function (obj) {
+							var data = obj.arr;  //获取当前点击的节点数据
+							var children = data[0].children;
+							if (children.length > 0) {
+								layer.msg('有子节点');
+							} else {
+								layer.msg('节点数据：' + JSON.stringify(data[0].name) + '<br>节点值：' + data[0].value);
+								$('#menu_user').html(data[0].name);
+								$('#menu_user').attr('value', data[0].value);
+
+								//查询数据库，获取对应的用户清单，并赋值于用户框
+								$.ajax({
+									url: '../../../Handlers/Handler-menuspermission.ashx',
+									data: { actid: 'loadPermission', menuvalue: data[0].value },
+									success: function (res) {
+										console.log(res);
+										if (res != '') {
+											var arr = JSON.parse(res);
+											demo1.setValue(arr);
+										} else {
+											demo1.setValue([]);
+											layer.msg('该菜单下未包含用户');
+										}
+									},
+									error: function (e) {
+										console.log(e);
+									}
+								});
+								//demo1.setValue([{ "name": "伊莲", "value": "00004", "children": [], "spread": true, "selected": true }, { "name": "库克", "value": "00002", "children": [], "spread": true, "selected": true }, { "name": "亚当", "value": "00001", "children": [], "spread": true, "selected": true }, { "name": "大卫", "value": "00003", "children": [], "spread": true, "selected": true }]) demo1.setValue([ ])
+							}
+						}
+					});
+				},
+				error: function (e) {
+
+				}
+			});
+
+			function MenuTree(arr) {
+				//添加spread属性
+				$.each(arr, function (i, value) {
+					value.spread = true;
+					if (value.children.length > 0) {
+						MenuTree(value.children);
+					}
+				});
+				return arr;
+			};
+
+			var demo1;
+			$.ajax({
+				url: '../../../Handlers/Handler-menuspermission.ashx',
+				data: { actid: 'getUsers' },
+				success: function (res) {
+					var d = JSON.parse(res);
+					userData = d.data;
+					userData = MenuTree(userData);
+
+					demo1 = xmSelect.render({
+						el: '#users1',
+						autoRow: true,
+						filterable: true,
+						tree: {
+							show: true,
+							showFolderIcon: true,
+							showLine: true,
+							indent: 20,
+							expandedKeys: true,
+						},
+						toolbar: {
+							show: true,
+							list: ['ALL', 'REVERSE', 'CLEAR']
+						},
+						filterable: true,
+						height: 'auto',
+						data: userData,
+						on: function (data) {
+							//arr:  当前多选已选中的数据
+							var arr = data.arr;
+							//change, 此次选择变化的数据,数组
+							var change = data.change;
+							//isAdd, 此次操作是新增还是删除
+							var isAdd = data.isAdd;
+
+							var arr1 = $.grep(arr, function (n, i) {
+								return (n.value.length > 4);
+							});
+
+							//可以return一个数组, 代表想选中的数据
+							return arr1;
+						},
+					});
+				},
+				error: function (e) {
+
+				}
+			});
+
+			function MenuTree(arr) {
+				//添加spread属性
+				$.each(arr, function (i, value) {
+					value.spread = true;
+					if (value.children.length > 0) {
+						MenuTree(value.children);
+					}
+				});
+				return arr;
+			};
+
+			function JsonDel(arr) {
+				$.each(arr, function (i, value) {
+					delete value.__node;
+					if (value.children.length > 0) {
+						JsonDel(value.children);
+					}
+				});
+				return arr;
+			}
+
+			$('#demo2-getValue').click(function () {
+				var selectArr = demo1.getValue();
+				var currMenuValue = $('#menu_user').attr('value');
+				var currMenuName = $('#menu_user').html();
+				console.log(currMenuName + ', ' + currMenuValue);
+				$.ajax({
+					url: '../../../Handlers/Handler-menuspermission.ashx',
+					type:'POST',
+					data: { actid: 'savePermission', data: JSON.stringify(selectArr), menuname: currMenuName, menuvalue: currMenuValue },
+					success: function (res) {
+						console.log(res);
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
+				layer.msg(JSON.stringify(selectArr));
+			});
+
+			//赋值
+			$('#demo2-setValue').click(function () {
+				demo1.setValue([{ "name": "伊莲", "value": "00004", "children": [], "spread": true, "selected": true }, { "name": "库克", "value": "00002", "children": [], "spread": true, "selected": true }, { "name": "亚当", "value": "00001", "children": [], "spread": true, "selected": true }, { "name": "大卫", "value": "00003", "children": [], "spread": true, "selected": true }])
+			});
+			//清空
+			$('#demo2-clear').click(function () {
+				demo1.setValue([]);
+			});
+		});
+    </script>
+</body>
+</html>

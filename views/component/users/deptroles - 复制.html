@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE> ZTREE DEMO - beforeEditName / beforeRemove / onRemove / beforeRename / onRename</TITLE>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../../packages/zTree_v3/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="../../../packages/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="../../../Scripts/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="../../../packages/zTree_v3/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="../../../packages/zTree_v3/js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="../../../packages/zTree_v3/js/jquery.ztree.exedit.js"></script>
+    <SCRIPT type="text/javascript">
+<!--
+        var setting = {
+            //        async: {
+            //enable: true,
+            //url:"jsontest.json",
+            //autoParam:["id", "name=n", "level=lv"],
+            //otherParam:{"otherParam":"zTreeAsyncTest"},
+            //dataFilter: filter
+            //        },
+            //        //数据格式
+            //        data: {
+            //            simpleData: {
+            //                enable: true
+            //            }
+            //        },
+            view: {
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },
+            edit: {
+                enable: true,
+                editNameSelectAll: true,
+                showRemoveBtn: showRemoveBtn,
+                //showRenameBtn: showRenameBtn
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                beforeDrag: beforeDrag,
+                beforeEditName: beforeEditName,
+                beforeRemove: beforeRemove,
+                beforeRename: beforeRename,
+                onRemove: onRemove,
+                onRename: onRename
+            }
+        };
+
+        function filter(treeId, parentNode, childNodes) {
+            if (!childNodes) return null;
+            for (var i = 0, l = childNodes.length; i < l; i++) {
+                childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+            }
+            return childNodes;
+        }
+
+        //var zNodes =[
+        //	{ id:1, pId:0, name:"父节点 1", open:true},
+        //	{ id:11, pId:1, name:"叶子节点 1-1"},
+        //	{ id:12, pId:1, name:"叶子节点 1-2"},
+        //	{ id:13, pId:1, name:"叶子节点 1-3"},
+        //	{ id:2, pId:0, name:"父节点 2", open:true},
+        //	{ id:21, pId:2, name:"叶子节点 2-1"},
+        //	{ id:22, pId:2, name:"叶子节点 2-2"},
+        //	{ id:23, pId:2, name:"叶子节点 2-3"},
+        //	{ id:3, pId:0, name:"父节点 3", open:true},
+        //	{ id:31, pId:3, name:"叶子节点 3-1"},
+        //	{ id:32, pId:3, name:"叶子节点 3-2"},
+        //	{ id:33, pId:3, name:"叶子节点 3-3"}
+        //      ];
+
+        //var zNodes = [
+        //    { id: 1, pId: null, name: '健科电子', open: true },
+        //    { id: 11, pId: 1, name: '设备部', open: true },
+        //    { id: 101, pId: 11, name: '维修班', open: true },
+        //    { id: 102, pId: 101, name: '维修员', open: false },
+        //    { id: 12, pId: 1, name: '叶子节点 1-2', open: false },
+        //    { id: 2, pId: null, name: '父节点 2', open: true },
+        //    { id: 21, pId: 2, name: '叶子节点 2-1', open: false },
+        //    { id: 22, pId: 2, name: '叶子节点 2-2', open: false },
+        //    { id: 23, pId: 2, name: '叶子节点 2-3', open: false },
+        //    { id: 3, pId: null, name: '父节点 3', open: true },
+        //    { id: 31, pId: 3, name: '叶子节点 3-1', open: false },
+        //    { id: 32, pId: 3, name: '叶子节点 3-2', open: false },
+        //    { id: 33, pId: 3, name: '叶子节点 3-3', open: false },
+        //];
+
+
+
+        var log, className = "dark";
+        function beforeDrag(treeId, treeNodes) {
+            return false;
+        }
+        function beforeEditName(treeId, treeNode) {
+            className = (className === "dark" ? "" : "dark");
+            showLog("[ " + getTime() + " beforeEditName ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.selectNode(treeNode);
+            setTimeout(function () {
+                if (confirm("进入节点 -- " + treeNode.name + " 的编辑状态吗？")) {
+                    setTimeout(function () {
+                        zTree.editName(treeNode);
+                    }, 0);
+                }
+            }, 0);
+            return false;
+        }
+        function beforeRemove(treeId, treeNode) {
+            className = (className === "dark" ? "" : "dark");
+            showLog("[ " + getTime() + " beforeRemove ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.selectNode(treeNode);
+            return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
+        }
+        function onRemove(e, treeId, treeNode) {
+            showLog("[ " + getTime() + " onRemove ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+        }
+        function beforeRename(treeId, treeNode, newName, isCancel) {
+            className = (className === "dark" ? "" : "dark");
+            showLog((isCancel ? "<span style='color:red'>" : "") + "[ " + getTime() + " beforeRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>" : ""));
+            if (newName.length == 0) {
+                setTimeout(function () {
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    zTree.cancelEditName();
+                    alert("节点名称不能为空.");
+                }, 0);
+                return false;
+            }
+            return true;
+        }
+        function onRename(e, treeId, treeNode, isCancel) {
+            showLog((isCancel ? "<span style='color:red'>" : "") + "[ " + getTime() + " onRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>" : ""));
+        }
+        function showRemoveBtn(treeId, treeNode) {
+            if (treeNode.level < 1) return false;
+            return !treeNode.isFirstNode;
+        }
+        function showRenameBtn(treeId, treeNode) {
+            return !treeNode.isLastNode;
+        }
+        function showLog(str) {
+            if (!log) log = $("#log");
+            log.append("<li class='" + className + "'>" + str + "</li>");
+            if (log.children("li").length > 8) {
+                log.get(0).removeChild(log.children("li")[0]);
+            }
+        }
+        function getTime() {
+            var now = new Date(),
+                h = now.getHours(),
+                m = now.getMinutes(),
+                s = now.getSeconds(),
+                ms = now.getMilliseconds();
+            return (h + ":" + m + ":" + s + " " + ms);
+        }
+
+        var newCount = 1;
+        function addHoverDom(treeId, treeNode) {
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_" + treeNode.tId);
+            if (btn) btn.bind("click", function () {
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                zTree.addNodes(treeNode, { id: (100 + newCount), pId: treeNode.id, name: "new node" + (newCount++) });
+                return false;
+            });
+        };
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_" + treeNode.tId).unbind().remove();
+        };
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll = $("#selectAll").attr("checked");
+        }
+
+        function dblClickExpand(treeId, treeNode) {
+            return treeNode.level > 0;
+        }
+
+        $(document).ready(function () {
+            //$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            //$.fn.zTree.init($("#treeDemo"), setting);
+            $.ajax({
+                type: 'get',
+                url: 'jsontest.json',
+                //dataType: 'json',
+                success: function (data) {
+                    $.fn.zTree.init($("#treeDemo"), setting, data);
+                },
+                error: function (data) {
+                    alert("错误");
+                }
+            });
+
+
+
+
+            $("#selectAll").bind("click", selectAll);
+
+            //遍历tree
+            zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            //var nodes = zTree.getNodes();
+            //var nodes_array = zTree.transformToArray(nodes);
+            //for (var i = 0; i < nodes_array.length; i++) {
+            //    console.log(nodes_array[i].name);
+            //}
+
+            var arrayToTree = function (data, id, pid)      //将ID、ParentID这种数据格式转换为树格式
+            {
+                if (!data || !data.length) return [];
+                var targetData = [];                    //存储数据的容器(返回)
+                var records = {};
+                var itemLength = data.length;           //数据集合的个数
+                for (var i = 0; i < itemLength; i++) {
+                    var o = data[i];
+                    records[o[id]] = o;
+                }
+                for (var i = 0; i < itemLength; i++) {
+                    var currentData = data[i];
+                    var parentData = records[currentData[pid]];
+                    if (!parentData) {
+                        targetData.push(currentData);
+                        continue;
+                    }
+                    parentData.children = parentData.children || [];
+                    parentData.children.push(currentData);
+                }
+                return targetData;
+            };
+            $('#saveBtn').click(function () {
+
+                var nodes = zTree.getNodes();
+                var nodes_array = zTree.transformToArray(nodes);
+
+                ////当数据为json格式时，可以如此来解析此json
+                //            $.each(nodes_array, function (index, item) {
+                //                console.log(item.id + ', ' + item.pId + ', ' + item.name + ', ' + item.open);
+                //            });
+
+                //var jn = {};
+                var ja = [];
+                //当数据为json格式时，也可以如此来解析此json
+                $.each(nodes_array, function (index, item) {
+                    //console.log('index is: ' + index + " : " + nodes_array[index].id + " : " + nodes_array[index].pId + " : " + nodes_array[index].name + " : " + nodes_array[index].open);
+                    var jn = {};
+                    jn.id = nodes_array[index].id;
+                    jn.pId = nodes_array[index].pId;
+                    jn.name = nodes_array[index].name;
+                    ja.push(jn);
+
+                });
+
+                console.log(ja);
+                $('#treeDemo').empty();
+                alert('清空zTree');
+                //$.each(nodes, function (index, item) {
+                //                console.log('index is: ' + index + " : " + nodes[index].id + " : " + nodes[index].pId + " : " + nodes[index].name + " : " + nodes[index].open);
+                //            });
+
+
+                //尝试递归
+                //           function PJson(json) {
+                //if(json.)
+                //           }
+
+
+
+
+
+                $.ajax({
+                    type: 'post',
+                    url: 'Handler.ashx',
+                    data: { act: JSON.stringify(ja) },
+                    success: function (res) {
+                        console.log("success.");
+                        $.fn.zTree.init($("#treeDemo"), setting, ja);
+                    },
+                    error: function (res) {
+                        console.log('error.');
+                    }
+
+                });
+
+                //for (var i = 0; i < nodes_array.length; i++) {
+                //    console.log(nodes_array[i].name);
+                //}
+                //var tnodes = arrayToTree();
+                //console.log(tnodes);
+            });
+
+        });
+                //--></SCRIPT>
+    <style type="text/css">
+        .ztree li span.button.add {
+            margin-left: 2px;
+            margin-right: -1px;
+            background-position: -144px 0;
+            vertical-align: top;
+            *vertical-align: middle
+        }
+    </style>
+
+</HEAD>
+
+
+<BODY>
+    <div class="layui-row layui-col-space5">
+        <div class="layui-col-md4">
+            <!--<div class="grid-demo grid-demo-bg1">1/3</div>-->
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-card" style="padding:15px; margin-top:15px">
+                <ul id="treeDemo" class="ztree" style="display:block;margin:15px auto"></ul>
+                <button id="btnSave" type="button" class="layui-btn" style="display:block;margin:0 auto;">保存</button>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <!--<div class="grid-demo grid-demo-bg1">1/3</div>-->
+        </div>
+    </div>
+    <!--<div class="layui-card">
+        <div class="content_wrap">
+            <div class="zTreeDemoBackground">
+                <ul id="treeDemo" class="ztree"></ul>
+                <button id="btnSave" type="button" class="layui-btn">保存</button>
+            </div>
+        </div>
+    </div>-->
+</BODY>
+</HTML>

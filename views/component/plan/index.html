@@ -1,0 +1,295 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>计划下达</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../Styles/jquery.mloading.css">
+    <style type="text/css">
+        .layui-table-cell {
+            font-size: 14px;
+            padding: 0 5px;
+            height: auto;
+            overflow: visible;
+            text-overflow: inherit;
+            white-space: normal;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid" id="component-tabs">
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+
+                    <div class="layui-card-header">计划下达</div>
+                    <div class="layui-card-body">
+                        <button type="button" class="layui-btn layui-btn-sm" onclick="uploadXls.click()"><i class="layui-icon"></i>上传文件</button>
+                        <br>
+                        <br>
+                        <input id="uploadXls" type="file" style="display:none" onchange="parseExcelFile3(this)">
+                        <div class="layui-tab">
+                            <style>
+                                th, td {
+                                    text-align: center;
+                                    vertical-align: middle !important;
+                                }
+                            </style>
+                            <ul class="layui-tab-title" id="tabTitle">
+                                <li class="layui-this">Sheet1</li>
+                                <li>Sheet2</li>
+                                <li>Sheet3</li>
+                            </ul>
+                            <div class="layui-tab-content" id="tabContent">
+                                <div class="layui-tab-item layui-show">
+                                    内容1
+                                    <table id="table1" border="1">
+                                    </table>
+                                </div>
+                                <div class="layui-tab-item">内容2</div>
+                                <div class="layui-tab-item">内容3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script src="../../../Scripts/jquery-3.4.1.js"></script>
+    <script src="../../../Scripts/xlsx-populate.js"></script>
+    <script src="../../../Scripts/jquery.mloading.js"></script>
+
+    <script>
+        function parseExcelFile3(e) {
+            $.ajax({
+                url: '../../../Handlers/Handler-planissue-check.ashx',
+                data: { actid: 'todaySubmitted' },
+                async: false,
+                success: function (res) {
+                    console.log(res);
+                    if (res === 'YES') {
+                        alert('每日只能提交一次生产计划，计划变更请使用编辑功能。');
+                        return;
+                    } else if (res === 'NO') {
+                        var n = e.files || [];
+                        //判断是否为excel表
+                        if (n.length) {
+                            var o = n[0];//只取一个文件
+                            var filename = o.name;//获取文件名
+
+                            console.time();
+                            $("body").mLoading("show");
+                            XlsxPopulate.fromDataAsync(o).then(function (file) {
+                                console.timeEnd();
+                                $("body").mLoading("hide");
+                                const RichText = XlsxPopulate.RichText; //定义RichText富文本实例以判断单元格内容
+
+                                $("#tabTitle li").remove();//清除现有tab标题
+                                $("#tabContent").empty();//清除现有tab内容
+
+                                file.sheets().forEach(function (s, index) {
+                                    console.log(s.name());//获取每个sheet的名称
+                                    var sheetname = s.name();//获取每个sheet的名称
+                                    //设置tab标题为sheet名称
+                                    if (index == 0) {
+                                        $("#tabTitle").append('<li class="layui-this">' + sheetname + '</li>'); //第一个tab标题
+                                        var _tc0 = '<div class="layui-tab-item layui-show"><table id="table' + index + '" border="1"></table></div>';
+                                        $("#tabContent").append(_tc0); //第一个tab内容
+                                    } else {
+                                        $("#tabTitle").append('<li>' + sheetname + '</li>');
+                                        var _tc = '<div class="layui-tab-item"><table id="table' + index + '" border="1"></table></div>';
+                                        $("#tabContent").append(_tc);
+                                    }
+
+                                    var rows = s._rows, isNewMachineOrder = false, isLastMachineOrder = false; newMachineOrderRow = '', lastMachineOrderRow = '';
+
+                                    var machineId, machineName, memo, planner, approver, machineOrderTime;
+                                    var usr = layui.data('login');
+                                    var publisher = usr.realname; //'嘉腾';
+
+                                    rows.forEach(function (r) {
+                                        var r_Number = r.rowNumber();
+                                        if (isNewMachineOrder) {
+                                            if (r.cell(1).value() == '备注') {
+                                                isLastMachineOrder = true;
+                                                lastMachineOrderRow = r_Number; //本机台计划最后一行的位置
+                                                memo = r.cell(2).value();
+                                                planner = r.cell(10).value() != undefined ? r.cell(10).value() : '';
+                                                approver = r.cell(12).value() != undefined ? r.cell(12).value() : '';
+                                                machineOrderTime = r.cell(13).value();//本机台计划的发布时间
+                                                //console.log(machineOrderTime);
+
+                                                //逐行读取机台指令
+                                                //生产序号，编号（制令号），计划时段，合同名称，型号电压，规格，合同长度km，所需生产长度、要求，类型，白班完成情况，白班签名，晚班完成情况，晚班签名，盘具类型，盘具规格
+                                                var orderId, orderNo, orderPeriod, contract, model_voltage, size, length, requirement, type, dayShift, dayShiftSignature, nightShift, nightShiftSignatrue, complete, reelType, reelSize;
+                                                for (i = newMachineOrderRow + 2; i < lastMachineOrderRow; i++) {
+                                                    orderId = s.row(i).cell(1).value() != undefined ? s.row(i).cell(1).value() : '';
+                                                    orderNo = s.row(i).cell(2).value() != undefined ? s.row(i).cell(2).value() : '';
+                                                    orderPeriod = s.row(i).cell(3).value() != undefined ? s.row(i).cell(3).value() : '';
+                                                    contract = s.row(i).cell(4).value() != undefined ? s.row(i).cell(4).value() : '';
+                                                    model_voltage = s.row(i).cell(5).value() != undefined ? s.row(i).cell(5).value() : '';
+                                                    size = s.row(i).cell(6).value() != undefined ? s.row(i).cell(6).value() : '';
+                                                    length = s.row(i).cell(7).value() != undefined ? s.row(i).cell(7).value() : '';
+
+                                                    if (s.row(i).cell(8).value() instanceof RichText) {
+                                                        requirement = s.row(i).cell(8).value().text(); //只取文本
+                                                    } else {
+                                                        requirement = s.row(i).cell(8).value() != undefined ? s.row(i).cell(8).value() : ''; //直接获取文本
+                                                    }
+
+                                                    type = s.row(i).cell(9).value() != undefined ? s.row(i).cell(9).value() : '';
+                                                    dayShift = s.row(i).cell(10).value() != undefined ? s.row(i).cell(10).value() : '';
+                                                    //dayShiftSignature = s.row(i).cell(11).value()!=undefined?s.row(i).cell(11).value():'';
+                                                    nightShift = s.row(i).cell(11).value() != undefined ? s.row(i).cell(11).value() : '';
+                                                    //nightShiftSignatrue = s.row(i).cell(13).value()!=undefined?s.row(i).cell(13).value():'';
+                                                    complete = '';
+                                                    reelType = s.row(i).cell(12).value() != undefined ? s.row(i).cell(12).value() : '';
+                                                    reelSize = s.row(i).cell(13).value() != undefined ? s.row(i).cell(13).value() : '';
+
+                                                    //console.log(filename, publisher, sheetname, machineName, planner, approver, machineOrderTime, orderId, orderNo, orderPeriod, contract, model_voltage, size, length, requirement, type, dayShift, nightShift, reelType, reelSize, memo);
+                                                    var tableData = $('<tr><td>' + orderId + '</td><td>' + orderNo + '</td><td>' + orderPeriod + '</td><td>' + contract + '</td><td>' + model_voltage + '</td><td>' + size + '</td><td>' + length + '</td><td>' + requirement + '</td><td>' + type + '</td><td>' + dayShift + '</td><td>' + nightShift + '</td><td>' + complete + '</td><td>' + reelType + '</td><td>' + reelSize + '</td></tr>');
+                                                    tableData.appendTo($("#table" + index));
+
+                                                    if (length != null && length.length != 0)
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            dataType: "json",
+                                                            async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+                                                            url: "../../../Handlers/Handler-planissue.ashx",
+                                                            data: {
+                                                                'filename': filename,
+                                                                'publisher': publisher,
+                                                                'sheetname': sheetname,
+                                                                'machineid': machineId,
+                                                                'machinename': machineName,
+                                                                'planner': planner,
+                                                                'approver': approver,
+                                                                'ordertime': machineOrderTime,
+                                                                'orderid': orderId,
+                                                                'orderno': orderNo,
+                                                                'orderperiod': orderPeriod,
+                                                                'contract': contract,
+                                                                'modelvoltage': model_voltage,
+                                                                'size': size,
+                                                                'length': length,
+                                                                'requirement': requirement,
+                                                                'type': type,
+                                                                'dayshift': dayShift,
+                                                                //'dayshiftsignature': dayShiftSignature,
+                                                                'nightshift': nightShift,
+                                                                //'nightshiftsignature': nightShiftSignatrue,
+                                                                'complete': complete,
+                                                                'reeltype': reelType,
+                                                                'reelsize': reelSize,
+                                                                'memo': memo
+                                                            },
+                                                            success: function (result) {
+                                                                //alert('get response: ' + result);
+                                                                //console.log(result);
+                                                            },
+                                                            error: function (e) {
+                                                                //console.log(e.status);
+                                                                //console.log(e.responseText);
+                                                            }
+                                                        });
+                                                }
+
+                                                var tableFoot = $('<tr><td>备注</td><td colspan="8">' + memo + '</td><td>计划：</td><td>' + planner + '</td><td>校核：</td><td>' + approver + '</td><td>' + machineOrderTime + '</td></tr>'); //机台计划表尾
+                                                tableFoot.appendTo($("#table" + index));
+                                                isNewMachineOrder = false; //标志复位
+                                            }
+                                        } else {
+                                            if (r.cell(1).value().indexOf('设备号') != -1) { //检索“设备号”的标志
+                                                isNewMachineOrder = true;
+                                                newMachineOrderRow = r_Number;//记住新机台名称的行位置
+                                                machineId = r.cell(2).value();//新的设备号
+                                                machineName = r.cell(4).value();//新的机台名称
+                                                //console.log(machineName);
+                                                var th = $('<thead><tr style="background-color:#ccc9c9"><th align="center">设备号：</th><th>' + machineId + '</th><th align="center">设备名称：</th><th colspan="11">' + machineName + '</th></tr></thead>');
+                                                th.appendTo($("#table" + index));
+                                                //生产序号	编号（制令号）	计划时段	合同名称	型 号 电 压	规格  合同长度km	所需生产长度、要求 类型	白班完成情况	白班签字	晚班完成情况	晚班签字	盘具  类型	盘具  规格
+
+                                                th = $('<thead><tr><th>生产序号</th><th>编号（制令号）</th><th>计划时段</th><th>合同名称</th><th>型号电压</th><th>规格</th><th>合同长度km</th><th>所需生产长度、要求</th>\
+                                                <th>类型</th><th>白班完成情况</th><th>晚班完成情况</th><th>是否完成</th><th>盘具类型</th><th>盘具规格</th></tr></thead> ');
+                                                th.appendTo($("#table" + index));
+                                            }
+                                        }
+                                    });
+                                });
+                            })
+                        }
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        //
+        //layui script
+        //
+
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'upload'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , router = layui.router();
+
+            element.render();
+
+            element.on('tab(component-tabs-brief)', function (obj) {
+                layer.msg(obj.index + '：' + this.innerHTML);
+            });
+
+            /* 触发事件 */
+            var active = {
+                tabAdd: function () {
+                    /* 新增一个Tab项 */
+                    element.tabAdd('demo', {
+                        title: '新选项' + (Math.random() * 1000 | 0) /* 用于演示 */
+                        , content: '内容' + (Math.random() * 1000 | 0)
+                        , id: new Date().getTime() /* 实际使用一般是规定好的id，这里以时间戳模拟下 */
+                    })
+                }
+                , tabDelete: function (othis) {
+                    /* 删除指定Tab项 */
+                    element.tabDelete('demo', '22');
+                    othis.addClass('layui-btn-disabled');
+                }
+                , tabChange: function () {
+                    /* 切换到指定Tab项 */
+                    element.tabChange('demo', '33');
+                }
+            };
+
+            $('#component-tabs .site-demo-active').on('click', function () {
+                var othis = $(this), type = othis.data('type');
+                active[type] ? active[type].call(this, othis) : '';
+            });
+
+            /* Hash地址的定位 */
+            var layid = router.hash.replace(/^#layid=/, '');
+            layid && element.tabChange('component-tabs-hash', layid);
+
+            element.on('tab(component-tabs-hash)', function (elem) {
+                location.hash = '/' + layui.router().path.join('/') + '#layid=' + $(this).attr('lay-id');
+            });
+
+        });
+    </script>
+</body>
+</html>

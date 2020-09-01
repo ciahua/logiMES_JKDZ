@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>设备完好日报表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">设备完好日报表</div>
+        <div class="layui-card-body">
+            <div class="test-table-reload-btn" style="margin-bottom: 10px;">
+                搜索内容：
+                <div class="layui-inline">
+                    <input type="text" class="layui-input" id="test3" placeholder="yyyy-MM">
+                </div>
+                <button class="layui-btn" id="search" data-type="reload">搜索</button>
+            </div>
+            <table class="layui-table" id="idTest" lay-filter="demo"></table>
+            <p id="records"></p>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!--<button class="layui-btn layui-btn-sm" lay-event="hideCols">隐藏日期列</button>-->
+            </div>
+        </script>
+
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+        <script src="../../../Scripts/jquery-3.4.1.js"></script>
+        <script type="text/html" id="dayTpl1">
+            {{#  if(d.Day1 === '正常' || d.Day1 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day1 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day1 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl2">
+            {{#  if(d.Day2 === '正常' || d.Day2 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day2 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day2 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl3">
+            {{#  if(d.Day3 === '正常' || d.Day3 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day3 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day3 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl4">
+            {{#  if(d.Day4 === '正常' || d.Day4 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day4 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day4 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl5">
+            {{#  if(d.Day5 === '正常' || d.Day5 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day5 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day5 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl6">
+            {{#  if(d.Day6 === '正常' || d.Day6 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day6 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day6 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl7">
+            {{#  if(d.Day7 === '正常' || d.Day7 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day7 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day7 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl8">
+            {{#  if(d.Day8 === '正常' || d.Day8 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day8 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day8 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl9">
+            {{#  if(d.Day9 === '正常' || d.Day9 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day9 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day9 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl10">
+            {{#  if(d.Day10 === '正常' || d.Day10 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day10 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day10 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl11">
+            {{#  if(d.Day11 === '正常' || d.Day11 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day11 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day11 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl12">
+            {{#  if(d.Day12 === '正常' || d.Day12 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day12 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day12 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl13">
+            {{#  if(d.Day13 === '正常' || d.Day13 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day13 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day13 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl14">
+            {{#  if(d.Day14 === '正常' || d.Day14 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day14 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day14 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl15">
+            {{#  if(d.Day15 === '正常' || d.Day15 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day15 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day15 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl16">
+            {{#  if(d.Day16 === '正常' || d.Day16 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day16 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day16 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl17">
+            {{#  if(d.Day17 === '正常' || d.Day17 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day17 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day17 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl18">
+            {{#  if(d.Day18 === '正常' || d.Day18 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day18 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day18 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl19">
+            {{#  if(d.Day19 === '正常' || d.Day19 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day19 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day19 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl20">
+            {{#  if(d.Day20 === '正常' || d.Day20 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day20 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day20 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl21">
+            {{#  if(d.Day21 === '正常' || d.Day21 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day21 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day21 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl22">
+            {{#  if(d.Day22 === '正常' || d.Day22 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day22 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day22 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl23">
+            {{#  if(d.Day23 === '正常' || d.Day23 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day23 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day23 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl24">
+            {{#  if(d.Day24 === '正常' || d.Day24 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day24 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day24 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl25">
+            {{#  if(d.Day25 === '正常' || d.Day25 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day25 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day25 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl26">
+            {{#  if(d.Day26 === '正常' || d.Day26 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day26 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day26 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl27">
+            {{#  if(d.Day27 === '正常' || d.Day27 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day27 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day27 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl28">
+            {{#  if(d.Day28 === '正常' || d.Day28 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day28 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day29 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl29">
+            {{#  if(d.Day29 === '正常' || d.Day29 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day29 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day29 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl30">
+            {{#  if(d.Day30 === '正常' || d.Day30 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day30 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day30 }}</span>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="dayTpl31">
+            {{#  if(d.Day31 === '正常' || d.Day31 === ''){ }}
+            <span class="layui-badge layui-bg-green">√</span>
+            {{#  } else if(d.Day31 != '正常'){ }}
+            <span class="layui-badge">{{ d.Day31 }}</span>
+            {{#  } }}
+        </script>
+    </div>
+
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['tree', 'util', 'table', 'laypage', 'laydate'], function () {
+            var table = layui.table;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate                
+
+            var myDate = new Date();
+            //获取当前年
+            var year = myDate.getFullYear();
+            //获取上月
+            var month = myDate.getMonth();
+            if (month === 0) {
+                year = year - 1;
+                month = 12;
+            }
+            var ym = year + '-' + month;
+
+            //年月选择器
+            laydate.render({
+                elem: '#test3'
+                , type: 'month'
+                , value: ym
+                , isInitValue: true
+                , trigger: 'click'
+                , change: function (value, date, endDate) {
+                    if ($(event.target).hasClass("layui-this")) {
+                        $(this.elem).val(value);
+                        $(".layui-laydate").remove();
+                    }
+                }
+            });
+
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#idTest'
+                , id: 'idTest'
+                , url: '../../../Handlers/Handler-maintenance.ashx'
+                , where: { actid: 'getDailyReportView', yearmonth:ym }
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'Id', title: 'ID', width: 80, sort: true, fixed: true }
+                    , { field: 'DevNo', title: '设备号', sort: true }
+                    , { field: 'DevName', title: '设备名称', minWidth: 120, sort: true }
+                    , { field: 'DevDept', title: '使用部门', sort: true, hide: true }
+                    , { field: 'Day1', title: '1', width: 60, event:'showDetail', hide: true, templet: '#dayTpl1' }
+                    , { field: 'Day2', title: '2', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl2' }
+                    , { field: 'Day3', title: '3', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl3' }
+                    , { field: 'Day4', title: '4', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl4' }
+                    , { field: 'Day5', title: '5', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl5' }
+                    , { field: 'Day6', title: '6', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl6' }
+                    , { field: 'Day7', title: '7', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl7' }
+                    , { field: 'Day8', title: '8', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl8' }
+                    , { field: 'Day9', title: '9', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl9' }
+                    , { field: 'Day10', title: '10', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl10' }
+                    , { field: 'Day11', title: '11', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl11' }
+                    , { field: 'Day12', title: '12', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl12' }
+                    , { field: 'Day13', title: '13', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl13' }
+                    , { field: 'Day14', title: '14', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl14' }
+                    , { field: 'Day15', title: '15', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl15' }
+                    , { field: 'Day16', title: '16', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl16' }
+                    , { field: 'Day17', title: '17', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl17' }
+                    , { field: 'Day18', title: '18', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl18' }
+                    , { field: 'Day19', title: '19', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl19' }
+                    , { field: 'Day20', title: '20', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl20' }
+                    , { field: 'Day21', title: '21', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl21' }
+                    , { field: 'Day22', title: '22', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl22' }
+                    , { field: 'Day23', title: '23', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl23' }
+                    , { field: 'Day24', title: '24', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl24' }
+                    , { field: 'Day25', title: '25', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl25' }
+                    , { field: 'Day26', title: '26', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl26' }
+                    , { field: 'Day27', title: '27', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl27' }
+                    , { field: 'Day28', title: '28', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl28' }
+                    , { field: 'Day29', title: '29', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl29' }
+                    , { field: 'Day30', title: '30', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl30' }
+                    , { field: 'Day31', title: '31', width: 60, event: 'showDetail', hide: true, templet: '#dayTpl31' }
+                    , { field: 'FailTime', title: '故障时间', minWidth: 100, align: 'center' }
+                    , { field: 'WorkTime', title: '设备工时', minWidth: 100, align: 'center' }
+                    , { field: 'RegularTime', title: '制度工时', minWidth: 100, align: 'center' }
+                    , { field: 'FaultRate', title: '故障率', minWidth: 100, align: 'center' }
+                    , { field: 'Availability', title: '可利用率', minWidth: 100, align: 'center' }
+                    , { field: 'UseRatio', title: '利用率', minWidth: 100, align: 'center' }
+                ]]
+                , height: 640
+                , toolbar: '#toolbarDemo'
+                , done: function (res, curr, count) {
+                    $(".layui-table tbody tr").eq(count-1).css('background-color', 'yellow');
+                    //$.ajax({
+                    //    url: '../../../Handlers/Handler-maintenance.ashx',
+                    //    data: { actid: 'getFailCount', yearmonth:$('#test3').val() },
+                    //    success: function (data) {
+                    //        var d = JSON.parse(data);
+                    //        $('#records').html('找到故障记录：' + d.count + ' 条');
+                    //    },
+                    //    error: function (e) {
+                    //        console.log(e);
+                    //    }
+                    //});
+                }
+            });
+
+            var $ = layui.$, active = {
+                reload: function () {
+                    var demoReload = $('#test3');
+
+                    //执行重载
+                    table.reload('idTest', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: { actid: 'getDailyReportView', yearmonth:demoReload.val() }                        
+                    }, 'data');
+                }
+            };
+
+            $('#search').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        //var data = checkStatus.data;
+                        //layer.alert(JSON.stringify(data));
+                        //页面层
+
+                        layer.open({
+                            title: '添加设备',
+                            type: 2,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['1024px', '768px'], //宽高
+                            content: 'devadd.html'
+                        });
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+                    case 'hideCols':
+                        ////遍历列
+                        //table.eachCols('idTest', function (index, item) {
+                        //    if (index >= 5 && index <= 35) {
+                        //        item.hide = false;
+                        //        console.log(index, item);
+                        //    }
+                        //});
+                        //table.render('idTest');
+
+
+                        //for (var i = 1; i <= 31; i++) {
+                        //    $(".layui-table-box").find("[data-field='Day"+i+"']").css("display", "none");
+                        
+                        //    //$("[data-field='Day" + i + "']").css('display', 'none');
+                        //}
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });           
+
+            //监听单元格编辑
+            table.on('edit(demo)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+
+                var faultrate = (data.FailTime / data.RegularTime * 100).toFixed(2) + '%'; //故障率
+                var availrate = ((data.RegularTime - data.FailTime) / data.RegularTime * 100).toFixed(2) + '%'; //可利用率
+                var userate = (data.WorkTime / data.RegularTime * 100).toFixed(2) + '%'; //利用率
+                
+                obj.update({
+                    FaultRate: faultrate,
+                    Availability: availrate,
+                    UseRatio:userate
+                });
+                layer.msg('[ID: ' + data.Id + '] ' + field + ' 字段更改为：' + value);
+                
+            });
+
+            //监听单元格事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                console.log(data);
+                console.log(data.DevNo);
+                console.log(obj);
+                console.log(this);
+                console.log($(this));
+                console.log($(this).attr('data-field'));//获取data-field的属性值
+                console.log($(this).text());//获取data-field的属性值
+                var t = $(this).attr('data-field');
+                var idx = t.substr(3, t.length);//获取日期序号
+                console.log(idx);
+                var p = data.DevNo.indexOf('计');
+                if (obj.event === 'showDetail' && p<0) {                    
+                    var dtail = 'Detail' + idx;
+                    var txt;
+                    console.log(dtail);
+                    for (var key in data) {
+                        console.log(key);
+                        console.log(data[key]);
+                        if (dtail == key) {
+                            txt = data[key];
+                        }
+                    }
+
+                    layer.tips(txt, this , {
+                        tips: [1, '#3595CC'],
+                        time: 4000
+                    });                   
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

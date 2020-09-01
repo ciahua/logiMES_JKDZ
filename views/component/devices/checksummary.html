@@ -1,0 +1,596 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>操作点检月度汇总</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">操作点检月度汇总</div>
+        <div class="layui-card-body">
+            <div class="test-table-reload-btn" style="margin-bottom: 10px;">
+                搜索内容：
+                <div class="layui-inline">
+                    <input class="layui-input" name="id" id="test-table-demoReload" autocomplete="off">
+                </div>
+                <button class="layui-btn" data-type="reload">搜索</button>
+            </div>
+
+            <table class="layui-table" id="demo" lay-filter="demo"></table>
+            <p>* 点检结果：正常、异常</p>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!--<button class="layui-btn layui-btn-sm" lay-event="addNew">新增</button>-->
+            </div>
+        </script>
+
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="check">提交</a>
+            <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+        </script>
+        <script type="text/html" id="resTpl">
+            {{#  if(d.Result === '正常'){ }}
+            <span class="layui-badge layui-bg-green">&nbsp;{{ d.Result }}&nbsp;</span>
+            {{#  } else if(d.Result === '异常') { }}
+            <span class="layui-badge layui-bg-red">{{ d.Result }}</span>
+            {{#  } else if(d.Result === '修理完毕') { }}
+            <span class="layui-badge layui-bg-blue">{{ d.Result }}</span>
+            {{#  } else if(d.Result === '停工') { }}
+        <span class="layui-badge layui-bg-orange">&nbsp;{{ d.Result }}&nbsp;</span>
+            {{#  } }}
+        </script>
+    </div>
+
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script>
+        layui.use(['tree', 'util', 'layer', 'element', 'jquery', 'form', 'table'], function (table, layer, element, $, form) {
+            var table = layui.table;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+           
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#demo'
+                , url: '../../../Handlers/Handler-devicecheck.ashx' //设置异步接口
+                , where: { actid: 'getCheckSummary' }
+                , cols: [[
+                    { type: 'numbers', fixed: true, style: 'background-color: #eee;' }
+                    , { field: '设备号', width: 100, sort: true, style: 'background-color: #eee;', title: '设备号', align: 'center' }
+                    , { field: '设备名称', minWidth: 120, sort: true, style: 'background-color: #eee;', title: '设备名称', align: 'center' }
+                    , { field: '点检项目', width: 180, style: 'background-color: #eee;', title: '项目', align: 'center' }
+                    , { field: '月份', width: 100, sort: true, style: 'background-color: #eee;', title: '时间', align: 'center' }
+                    , { field: '01白班', title: '01白班', event: 'showDetail', align: 'center' }
+                    , { field: '01夜班', title: '01夜班', event: 'showDetail', align: 'center' }
+                    , { field: '02白班', title: '02白班', event: 'showDetail', align: 'center' }
+                    , { field: '02夜班', title: '02夜班', event: 'showDetail', align: 'center' }
+                    , { field: '03白班', title: '03白班', event: 'showDetail', align: 'center' }
+                    , { field: '03夜班', title: '03夜班', event: 'showDetail', align: 'center' }
+                    , { field: '04白班', title: '04白班', event: 'showDetail', align: 'center' }
+                    , { field: '04夜班', title: '04夜班', event: 'showDetail', align: 'center' }
+                    , { field: '05白班', title: '05白班', event: 'showDetail', align: 'center' }
+                    , { field: '05夜班', title: '05夜班', event: 'showDetail', align: 'center' }
+                    , { field: '06白班', title: '06白班', event: 'showDetail', align: 'center' }
+                    , { field: '06夜班', title: '06夜班', event: 'showDetail', align: 'center' }
+                    , { field: '07白班', title: '07白班', event: 'showDetail', align: 'center' }
+                    , { field: '07夜班', title: '07夜班', event: 'showDetail', align: 'center' }
+                    , { field: '08白班', title: '08白班', event: 'showDetail', align: 'center' }
+                    , { field: '08夜班', title: '08夜班', event: 'showDetail', align: 'center' }
+                    , { field: '09白班', title: '09白班', event: 'showDetail', align: 'center' }
+                    , { field: '09夜班', title: '09夜班', event: 'showDetail', align: 'center' }
+                    , { field: '10白班', title: '10白班', event: 'showDetail', align: 'center' }
+                    , { field: '10夜班', title: '10夜班', event: 'showDetail', align: 'center' }
+                    , { field: '11白班', title: '11白班', event: 'showDetail', align: 'center' }
+                    , { field: '11夜班', title: '11夜班', event: 'showDetail', align: 'center' }
+                    , { field: '12白班', title: '12白班', event: 'showDetail', align: 'center' }
+                    , { field: '12夜班', title: '12夜班', event: 'showDetail', align: 'center' }
+                    , { field: '13白班', title: '13白班', event: 'showDetail', align: 'center' }
+                    , { field: '13夜班', title: '13夜班', event: 'showDetail', align: 'center' }
+                    , { field: '14白班', title: '14白班', event: 'showDetail', align: 'center' }
+                    , { field: '14夜班', title: '14夜班', event: 'showDetail', align: 'center' }
+                    , { field: '15白班', title: '15白班', event: 'showDetail', align: 'center' }
+                    , { field: '15夜班', title: '15夜班', event: 'showDetail', align: 'center' }
+                    , { field: '16夜班', title: '16夜班', event: 'showDetail', align: 'center' }
+                    , { field: '16夜班', title: '16夜班', event: 'showDetail', align: 'center' }
+                    , { field: '17白班', title: '17白班', event: 'showDetail', align: 'center' }
+                    , { field: '17夜班', title: '17夜班', event: 'showDetail', align: 'center' }
+                    , { field: '18白班', title: '18白班', event: 'showDetail', align: 'center' }
+                    , { field: '18夜班', title: '18夜班', event: 'showDetail', align: 'center' }
+                    , { field: '19白班', title: '19白班', event: 'showDetail', align: 'center' }
+                    , { field: '19夜班', title: '19夜班', event: 'showDetail', align: 'center' }
+                    , { field: '20白班', title: '20白班', event: 'showDetail', align: 'center' }
+                    , { field: '20夜班', title: '20夜班', event: 'showDetail', align: 'center' }
+                    , { field: '21白班', title: '21白班', event: 'showDetail', align: 'center' }
+                    , { field: '21夜班', title: '21夜班', event: 'showDetail', align: 'center' }
+                    , { field: '22白班', title: '22白班', event: 'showDetail', align: 'center' }
+                    , { field: '22夜班', title: '22夜班', event: 'showDetail', align: 'center' }
+                    , { field: '23白班', title: '23白班', event: 'showDetail', align: 'center' }
+                    , { field: '23夜班', title: '23夜班', event: 'showDetail', align: 'center' }
+                    , { field: '24白班', title: '24白班', event: 'showDetail', align: 'center' }
+                    , { field: '24夜班', title: '24夜班', event: 'showDetail', align: 'center' }
+                    , { field: '25白班', title: '25白班', event: 'showDetail', align: 'center' }
+                    , { field: '25夜班', title: '25夜班', event: 'showDetail', align: 'center' }
+                    , { field: '26白班', title: '26白班', event: 'showDetail', align: 'center' }
+                    , { field: '26夜班', title: '26夜班', event: 'showDetail', align: 'center' }
+                    , { field: '27白班', title: '27白班', event: 'showDetail', align: 'center' }
+                    , { field: '27夜班', title: '27夜班', event: 'showDetail', align: 'center' }
+                    , { field: '28白班', title: '28白班', event: 'showDetail', align: 'center' }
+                    , { field: '28夜班', title: '28夜班', event: 'showDetail', align: 'center' }
+                    , { field: '29白班', title: '29白班', event: 'showDetail', align: 'center' }
+                    , { field: '29夜班', title: '29夜班', event: 'showDetail', align: 'center' }
+                    , { field: '30白班', title: '30白班', event: 'showDetail', align: 'center' }
+                    , { field: '30夜班', title: '30夜班', event: 'showDetail', align: 'center' }
+                    , { field: '31白班', title: '31白班', event: 'showDetail', align: 'center' }
+                    , { field: '31夜班', title: '31夜班', event: 'showDetail', align: 'center' }
+                ]]
+                , id: 'idTest'
+                , height: 550
+                , page: true
+                , toolbar: '#toolbarDemo'
+                , done:function () {
+                    $("table tr").each(function () {
+                        var s = $(this).children().eq(5).text();//白班
+                        if (s == "正常") $(this).children().eq(5).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(5).addClass("layui-bg-red");
+                        //夜班
+                        s = $(this).children().eq(6).text();
+                        if (s == "正常") $(this).children().eq(6).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(6).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(7).text();
+                        if (s == "正常") $(this).children().eq(7).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(7).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(8).text();
+                        if (s == "正常") $(this).children().eq(8).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(8).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(9).text();
+                        if (s == "正常") $(this).children().eq(9).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(9).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(10).text();
+                        if (s == "正常") $(this).children().eq(10).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(10).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(11).text();
+                        if (s == "正常") $(this).children().eq(11).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(11).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(12).text();
+                        if (s == "正常") $(this).children().eq(12).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(12).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(13).text();
+                        if (s == "正常") $(this).children().eq(13).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(13).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(14).text();
+                        if (s == "正常") $(this).children().eq(14).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(14).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(15).text();
+                        if (s == "正常") $(this).children().eq(15).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(15).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(16).text();
+                        if (s == "正常") $(this).children().eq(16).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(16).addClass("layui-bg-red");
+
+                        var s = $(this).children().eq(17).text();//白班
+                        if (s == "正常") $(this).children().eq(17).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(17).addClass("layui-bg-red");
+                        //夜班
+                        s = $(this).children().eq(18).text();
+                        if (s == "正常") $(this).children().eq(18).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(18).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(19).text();
+                        if (s == "正常") $(this).children().eq(19).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(19).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(20).text();
+                        if (s == "正常") $(this).children().eq(20).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(20).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(21).text();
+                        if (s == "正常") $(this).children().eq(21).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(21).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(22).text();
+                        if (s == "正常") $(this).children().eq(22).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(22).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(23).text();
+                        if (s == "正常") $(this).children().eq(23).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(23).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(24).text();
+                        if (s == "正常") $(this).children().eq(24).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(24).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(25).text();
+                        if (s == "正常") $(this).children().eq(25).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(25).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(26).text();
+                        if (s == "正常") $(this).children().eq(26).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(26).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(27).text();
+                        if (s == "正常") $(this).children().eq(27).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(27).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(28).text();
+                        if (s == "正常") $(this).children().eq(28).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(28).addClass("layui-bg-red");
+
+                        var s = $(this).children().eq(29).text();//白班
+                        if (s == "正常") $(this).children().eq(29).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(29).addClass("layui-bg-red");
+                        //夜班
+                        s = $(this).children().eq(30).text();
+                        if (s == "正常") $(this).children().eq(30).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(30).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(31).text();
+                        if (s == "正常") $(this).children().eq(31).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(31).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(32).text();
+                        if (s == "正常") $(this).children().eq(32).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(32).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(33).text();
+                        if (s == "正常") $(this).children().eq(33).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(33).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(34).text();
+                        if (s == "正常") $(this).children().eq(34).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(34).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(35).text();
+                        if (s == "正常") $(this).children().eq(35).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(35).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(36).text();
+                        if (s == "正常") $(this).children().eq(36).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(36).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(37).text();
+                        if (s == "正常") $(this).children().eq(37).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(37).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(38).text();
+                        if (s == "正常") $(this).children().eq(38).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(38).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(39).text();
+                        if (s == "正常") $(this).children().eq(39).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(39).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(40).text();
+                        if (s == "正常") $(this).children().eq(40).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(40).addClass("layui-bg-red");
+
+                        var s = $(this).children().eq(41).text();//白班
+                        if (s == "正常") $(this).children().eq(41).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(41).addClass("layui-bg-red");
+                        //夜班
+                        s = $(this).children().eq(42).text();
+                        if (s == "正常") $(this).children().eq(42).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(42).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(43).text();
+                        if (s == "正常") $(this).children().eq(43).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(43).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(44).text();
+                        if (s == "正常") $(this).children().eq(44).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(44).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(45).text();
+                        if (s == "正常") $(this).children().eq(45).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(45).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(46).text();
+                        if (s == "正常") $(this).children().eq(46).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(46).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(47).text();
+                        if (s == "正常") $(this).children().eq(47).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(47).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(48).text();
+                        if (s == "正常") $(this).children().eq(48).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(48).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(49).text();
+                        if (s == "正常") $(this).children().eq(49).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(49).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(50).text();
+                        if (s == "正常") $(this).children().eq(50).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(50).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(51).text();
+                        if (s == "正常") $(this).children().eq(51).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(51).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(52).text();
+                        if (s == "正常") $(this).children().eq(52).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(52).addClass("layui-bg-red");
+
+                        var s = $(this).children().eq(53).text();//白班
+                        if (s == "正常") $(this).children().eq(53).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(53).addClass("layui-bg-red");
+                        //夜班
+                        s = $(this).children().eq(54).text();
+                        if (s == "正常") $(this).children().eq(54).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(54).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(55).text();
+                        if (s == "正常") $(this).children().eq(55).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(55).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(56).text();
+                        if (s == "正常") $(this).children().eq(56).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(56).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(57).text();
+                        if (s == "正常") $(this).children().eq(57).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(57).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(58).text();
+                        if (s == "正常") $(this).children().eq(58).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(58).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(59).text();
+                        if (s == "正常") $(this).children().eq(59).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(59).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(60).text();
+                        if (s == "正常") $(this).children().eq(60).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(60).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(61).text();
+                        if (s == "正常") $(this).children().eq(61).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(61).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(62).text();
+                        if (s == "正常") $(this).children().eq(62).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(62).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(63).text();
+                        if (s == "正常") $(this).children().eq(63).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(63).addClass("layui-bg-red");
+
+                        s = $(this).children().eq(64).text();
+                        if (s == "正常") $(this).children().eq(64).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(64).addClass("layui-bg-red");
+
+                        var s = $(this).children().eq(65).text();//白班
+                        if (s == "正常") $(this).children().eq(65).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(65).addClass("layui-bg-red");
+                        //夜班
+                        s = $(this).children().eq(66).text();
+                        if (s == "正常") $(this).children().eq(66).addClass("layui-bg-green");
+                        if (s == "异常") $(this).children().eq(66).addClass("layui-bg-red");
+
+                    });
+                }
+            });
+
+            var devNo = layui.data('LocalDevice').deviceid;
+
+            $("#daystate").on('change', function () {
+                document.getElementById("test-table-demoReload").value = 'DayShift+' + document.getElementById("daystate").value;
+                active.reload();
+            });
+
+            $("#nightstate").on('change', function () {
+                document.getElementById("test-table-demoReload").value = 'NightShift+' + document.getElementById("nightstate").value;
+                active.reload();
+            });
+            
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../../../Handlers/Handler-devicelist.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                                //假设这是iframe页
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //parent.layer.close(index); //再执行关闭
+
+                                ////这里以搜索为例
+                                //tableIns.reload({
+                                //    where: { actid: 'getTable' }
+                                //    , page: {
+                                //        curr: 1 //重新从第 1 页开始
+                                //    }
+                                //});
+
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+
+                    layer.open({
+                        title: '编辑设备',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['1024px', '768px'], //宽高
+                        content: 'devedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            //console.log(body.html()); //得到iframe页的body内容
+                            //body.find('input').val('Hi，我是从父页来的')
+                            //body.find('example').val(data);
+                            //setTimeout(function () { body.find('#LAY-component-form-setval').trigger('click') }, 100);
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='devno']").val(data.DevNo);
+                            body.find("input[name='devname']").val(data.DevName);
+                            body.find("input[name='devtype']").val(data.DevType);
+                            body.find("input[name='quantity']").val(data.Quantity);
+                            body.find("input[name='vender']").val(data.Vender);
+                            body.find("input[name='devdept']").val(data.DevDept);
+                            body.find("input[name='buydate']").val(data.BuyDate);
+                            body.find("input[name='lifetime']").val(data.LifeTime);
+                            body.find("input[name='devclass']").val(data.DevClass);
+
+                            body.find("input[name='special']").val(data.Special);
+                            body.find("input[name='capacity']").val(data.Capacity);
+                            body.find("input[name='devstate']").val(data.DevState);
+                            body.find("input[name='importance']").val(data.Importance);
+                            body.find("input[name='value']").val(data.Value);
+                            body.find("input[name='changedate']").val(data.ChangeDate);
+                            body.find("textarea[name='desc']").val(data.ChangeDesc);
+
+                        }
+                    });
+                } else if (obj.event === 'check') {
+                    //layer.alert(JSON.stringify(data));
+                    console.log(data.Result);
+                    var res = data.Result;
+                    if (res == null || $.trim(res) == '') {
+                        layer.msg('提交字段为空！');
+                        return;
+                    }
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicecheck.ashx',
+                        data: { actid: 'insTable', data: JSON.stringify(data) },
+                        success: function (res) {
+                            layer.msg('提交成功');
+                        },
+                        error: function (e) {
+
+                        }
+                    });                    
+                } else if (obj.event === 'showDetail') {
+                    var t = $(this).attr('data-field');
+                    var trec = t + '记录';
+                    var txt;
+                    for (var key in data) {
+                        //console.log(key);
+                        //console.log(data[key]);
+                        if (trec == key) {                            
+                            txt = data[key];
+                        }
+                    }
+                    if (data[t] === '异常') {
+                        layer.tips(txt, this, {
+                            tips: [1, '#3595CC'],
+                            time: 4000
+                        });
+                    }                    
+                }
+            });
+
+            // 监听修改update到表格中
+            form.on('select(testSelect)', function (data) {
+                //debugger;
+                var elem = $(data.elem);
+                var trElem = elem.parents('tr');
+                var tableData = table.cache['demo'];
+                // 更新到表格的缓存数据中，才能在获得选中行等等其他的方法中得到更新之后的值
+                tableData[trElem.data('index')][elem.attr('name')] = data.value;
+                // 其他的操作看需求 TODO
+            });
+          
+            //执行搜索
+            var $ = layui.$, active = {
+                reload: function () {
+                    var demoReload = $('#test-table-demoReload');
+
+                    //执行重载
+                    table.reload('idTest', {
+                       page: {
+                            curr: 1 //重新从第 1 页开始
+                        }, /* */
+                         where: {
+                            actid: 'searchResult'
+                             , searchkey: demoReload.val()
+                        }
+                    });
+
+                    $("#daystate").on('change', function () {
+                        document.getElementById("test-table-demoReload").value = 'DayShift+' + document.getElementById("daystate").value;
+                        active.reload();
+                    });
+
+                    $("#nightstate").on('change', function () {
+                        document.getElementById("test-table-demoReload").value = 'NightShift+' + document.getElementById("nightstate").value;
+                        active.reload();
+                    });
+                }
+            };
+
+            $('.test-table-reload-btn .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+                //alert($("#test-table-demoReload").val());
+                
+            });
+
+            table.on('sort(demo)', function (obj) {
+                table.reload('idTest', {
+                    initSort: obj
+                });
+            });
+
+
+
+        });
+    </script>
+
+</body>
+</html>

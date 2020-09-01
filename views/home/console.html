@@ -1,0 +1,534 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>控制台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md8">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header">快捷方式</div>
+                            <div class="layui-card-body">
+
+                                <div class="layui-carousel layadmin-carousel layadmin-shortcut">
+                                    <div carousel-item>
+                                        <ul class="layui-row layui-col-space10">
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/plan/planreport.html">
+                                                    <i class="layui-icon layui-icon-console"></i>
+                                                    <cite>进度汇报</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/failreport.html">
+                                                    <i class="layui-icon layui-icon-chart"></i>
+                                                    <cite>故障报修</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/takejob.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>维修接单</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/confirm.html">
+                                                    <i class="layui-icon layui-icon-template-1"></i>
+                                                    <cite>修复确认</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/devicefail.html">
+                                                    <i class="layui-icon layui-icon-chat"></i>
+                                                    <cite>故障追踪</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/devicecheck.html">
+                                                    <i class="layui-icon layui-icon-find-fill"></i>
+                                                    <cite>操作点检</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/expertcheck.html">
+                                                    <i class="layui-icon layui-icon-survey"></i>
+                                                    <cite>专业点检</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="component/devices/devicelist.html">
+                                                    <i class="layui-icon layui-icon-user"></i>
+                                                    <cite>设备台账</cite>
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                        <ul class="layui-row layui-col-space10">
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs3">
+                                                <a lay-href="set/user/info.html">
+                                                    <i class="layui-icon layui-icon-set"></i>
+                                                    <cite>我的资料</cite>
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header">设备状态</div>
+                            <div class="layui-card-body">
+
+                                <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                    <div carousel-item>
+                                        <ul class="layui-row layui-col-space10">
+                                            <li class="layui-col-xs6">
+                                                <a lay-href="component/devices/devicefail.html" class="layadmin-backlog-body">
+                                                    <h3>待修设备</h3>
+                                                    <p><cite id="devWait">0</cite></p>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs6">
+                                                <a lay-href="component/devices/devicefail.html" class="layadmin-backlog-body">
+                                                    <h3>在修设备</h3>
+                                                    <p><cite id="devRepair">0</cite></p>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs6">
+                                                <a lay-href="component/devices/devicefail.html" class="layadmin-backlog-body">
+                                                    <h3>待验设备</h3>
+                                                    <p><cite id="devConfirm">0</cite></p>
+                                                </a>
+                                            </li>
+                                            <li class="layui-col-xs6">
+                                                <a href="javascript:;" onclick="layer.tips('正常设备44台', this, {tips: 3});" class="layadmin-backlog-body">
+                                                    <h3>正常设备</h3>
+                                                    <p><cite id="devOk">0</cite></p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <ul class="layui-row layui-col-space10">
+                                            <li class="layui-col-xs6">
+                                                <a href="javascript:;" class="layadmin-backlog-body">
+                                                    <h3>其他设备</h3>
+                                                    <p><cite style="color: #FF5722;">5</cite></p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <!--<div class="layui-carousel" id="test1">
+                            <div carousel-item>
+                                <div>-->
+                                    <div class="layui-card">
+                                        <div class="layui-card-header">数据概览</div>
+                                        <div class="layui-card-body">
+                                            <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-dataview">
+                                                <div carousel-item id="LAY-index-dataview">
+                                                    <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!--</div>
+                            </div>
+                        </div>-->
+                        <div class="layui-card">
+                            <div class="layui-tab layui-tab-brief layadmin-latestData">
+                                <ul class="layui-tab-title">
+                                    <li class="layui-this">系统消息</li>
+                                    <!--<li>今日动态</li>-->
+                                </ul>
+                                <div class="layui-tab-content">
+                                    <div class="layui-tab-item layui-show">
+                                        <table id="LAY-index-topSearch"></table>
+                                    </div>
+                                    <div class="layui-tab-item">
+                                        <table id="LAY-index-topCard"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md4">
+
+                <div class="layui-card">
+                    <div class="layui-card-header">业务报告</div>
+                    <div class="layui-card-body layadmin-takerates">
+                        <div class="layui-progress" lay-showPercent="yes" lay-filter="orderreport">
+                            <!--<h3>当日订单反馈率（日同比 11% <span class="layui-edge layui-edge-bottom" lay-tips="下降" lay-offset="-15"></span>）</h3>-->
+                            <h3>当日订单反馈率（订单总数：<span id="ordercount1">0</span>/反馈数：<span id="orderfeed">0</span>)</h3>
+                            <div class="layui-progress-bar" lay-percent="0%"></div>
+                        </div>
+                        <div class="layui-progress" lay-showPercent="yes" lay-filter="orders">
+                            <!--<h3>当日订单完成率（日同比 28% <span class="layui-edge layui-edge-top" lay-tips="增长" lay-offset="-15"></span>）</h3>-->
+                            <h3>当日订单完成率（订单总数：<span id="ordercount">0</span>/完成数：<span id="orderdone">0</span>)</h3>
+                            <div class="layui-progress-bar" lay-percent="0  %"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header">设备监控</div>
+                    <div class="layui-card-body layadmin-takerates">
+                        <div class="layui-progress" lay-showPercent="yes" lay-filter="devicerun">
+                            <h3>设备利用率</h3>
+                            <div class="layui-progress-bar" lay-percent="100%"></div>
+                        </div>
+                        <div class="layui-progress" lay-showPercent="yes" lay-filter="demo">
+                            <h3>当前故障设备占比</h3>
+                            <div id="failpercent" class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header">动态</div>
+                    <div class="layui-card-body">
+                        <dl class="layuiadmin-card-status" id="messages">
+                            <dd>
+                                <div class="layui-status-img"><a href="javascript:;"><img src="../../layuiadmin/style/res/logo.png"></a></div>
+                                <div>
+                                    <p></p>
+                                    <span></span>
+                                </div>
+                            </dd>
+                            <dd>
+                                <div class="layui-status-img"><a href="javascript:;"><img src="../../layuiadmin/style/res/logo.png"></a></div>
+                                <div>
+                                    <p></p>
+                                    <span></span>
+                                </div>
+                            </dd>
+                            <dd>
+                                <div class="layui-status-img"><a href="javascript:;"><img src="../../layuiadmin/style/res/logo.png"></a></div>
+                                <div>
+                                    <p></p>
+                                    <span></span>
+                                </div>
+                            </dd>
+                            <dd>
+                                <div class="layui-status-img"><a href="javascript:;"><img src="../../layuiadmin/style/res/logo.png"></a></div>
+                                <div>
+                                    <p></p>
+                                    <span></span>
+                                </div>
+                            </dd>
+                            <dd>
+                                <div class="layui-status-img"><a href="javascript:;"><img src="../../layuiadmin/style/res/logo.png"></a></div>
+                                <div>
+                                    <p></p>
+                                    <span></span>
+                                </div>
+                            </dd>
+                            <dd>
+                                <div class="layui-status-img"><a href="javascript:;"><img src="../../layuiadmin/style/res/logo.png"></a></div>
+                                <div>
+                                    <p></p>
+                                    <span></span>
+                                </div>
+                            </dd>
+                        </dl>
+                        <!--<div class="layui-carousel layadmin-carousel layadmin-news" data-autoplay="true" data-anim="fade" lay-filter="news">
+                          <div carousel-item>
+                            <div><a href="http://www.logi-iot.com/" target="_blank" class="layui-bg-red">logimes 快速上手文档</a></div>
+                            <div><a href="http://www.logi-iot.com/" target="_blank" class="layui-bg-green">logimes 会员讨论专区</a></div>
+                            <div><a href="http://www.logi-iot.com/" target="_blank" class="layui-bg-blue">获得 logimes 官方后台模板系统</a></div>
+                          </div>
+                        </div>-->
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        公司简介
+                        <i class="layui-icon layui-icon-tips" lay-tips="要支持的噢" lay-offset="5"></i>
+                    </div>
+                    <div class="layui-card-body layui-text layadmin-text">
+                        <p>
+                            健科电子股份有限公司（以下简称健科电子）前身成立于1999年9月，2004年5月改制为股份有限公司，2010年12月31日在深交所成功上市（股票代码：002533）。
+                        </p>
+                        <p>截至2019年，公司注册资金7.33亿元，总资产58亿元，2019年年营业收入近60亿元，利税近4亿元。现下辖13家子公司，员工3500余人，拥有长沙环科园、长沙麓谷、衡阳、湘潭、成都、武汉六大产业基地，总占地面积过千亩。作为中西部地区电线电缆行业领军企业，健科电子拥有丰富的电线电缆行业管理、生产、研发经营经验，现有专利授权322项，参与起草、编制国家及行业标准19项，主导产品为电力电缆、架空裸导线及架空绝缘电缆、电气装备用电线电缆、绕组线、特种电缆，为国家智慧能源系统、特高压电网、高铁和城市轨道交通、“北煤南运”战略大通道、风力发电、核电建设、汽车产业和工程机械、清洁能源工程和政府重大工程项目提供了大量稳定、可靠的优质产品和服务。</p>
+                        <p>—— 健科电子（<a href="http://www.gold-cup.cn/" target="_blank">gold-cup.cn</a>）</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="../../layuiadmin/layui/layui.js?t=1"></script>
+    <script src="../../Scripts/permission.js"></script>
+    <script>
+        layui.config({
+            base: '../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'console', 'table', 'form', 'layer', 'util', 'element'], function () {
+            var table = layui.table
+                , form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , element = layui.element
+                , util = layui.util;
+            var menuData = [
+                { name: '控制台', url: 'home/console.html' },
+                { name: '设备台账', url: 'component/devices/devicelist.html' },
+                { name: '计划下达', url: 'component/plan/index.html' },
+                { name: '进度查看', url: 'component/plan/planprogress.html' },
+                { name: '进度汇报', url: 'component/plan/planreport.html' },
+                { name: '设备日志', url: 'component/devices/devicelog.html' },
+                { name: '故障追踪', url: 'component/devices/devicefail.html' },
+                { name: '故障报修', url: 'component/devices/failreport.html' },
+                { name: '维修派单', url: 'component/devices/assign.html' },
+                { name: '维修接单', url: 'component/devices/takejob.html' },
+                { name: '修复确认', url: 'component/devices/confirm.html' },
+                { name: '维修记录', url: 'component/devices/fixlog.html' },
+                { name: '操作点检', url: 'component/devices/devicecheck.html' },
+                { name: '操作点检查看', url: 'component/devices/checkresult.html' },
+                { name: '专业点检', url: 'component/devices/expertcheck.html' },
+                { name: '专业点检查看', url: 'component/devices/expertresult.html' },
+                { name: '年度保养计划制表', url: 'component/devices/yearmaintainmake.html' },
+                { name: '年度保养计划查看', url: 'component/devices/yearmaintenanceview.html' },
+                { name: '电量消耗', url: 'component/energy/energy.html' },
+                { name: '设备运行数据表', url: 'component/devices/dailyreport.html' },
+                { name: '设备完好日报表', url: 'component/devices/dailyreportview.html' },
+                { name: '设备运行时间及完好率', url: 'component/devices/deviceperformance.html' },
+                { name: '设备管理评价指标统计表', url: 'component/devices/deviceevaluate.html' },
+                { name: '用户管理', url: 'component/users/userlist.html' },
+                { name: '部门角色', url: 'component/users/deptroles.html' },
+                { name: '菜单管理', url: 'component/users/menus.html' },
+                { name: '菜单权限', url: 'component/users/menuspermission.html' },
+                { name: '后台管理员', url: 'user/administrators/list.html' },
+                { name: '权限设置', url: 'user/administrators/role.html' },
+                { name: '基本资料', url: 'set/user/info.html' },
+                { name: '修改密码', url: 'set/user/password.html' }
+            ];
+
+            var carousel = layui.carousel;
+            //建造实例
+            carousel.render({
+                elem: '#test1'
+                , width: '100%' //设置容器宽度
+                , height: '410px' //设置容器宽度
+                , arrow: 'always' //始终显示箭头
+                //,anim: 'updown' //切换动画方式
+            });
+
+            var u = layui.data('login');
+
+            $(document).on('click', 'a[lay-href]', function () {
+                var othis = $(this)
+                    , href = null
+                    , text = null
+                    , router = layui.router();
+                var menu = $.trim(othis.text());
+                $.each(menuData, function (i, n) {
+                    if (n.name == menu) {
+                        href = n.url;
+                        console.log(href);
+                    }
+                });
+
+                $.ajax({
+                    url: '../../Handlers/Handler-index.ashx',
+                    data: { actid: 'checkPermission', menuname: menu, userid: u.username },
+                    success: function (res) {
+                        if (res == 'success' || u.username == '00000') {
+                            parent.layui.admin.events.closeThisTabs();
+                            var topLayui = parent === self ? layui : top.layui;
+                            console.log(href + ', ' + othis.text());
+                            topLayui.index.openTabsPage(href, text || othis.text());
+
+                        } else {
+                            layer.msg('无此权限');
+                            parent.layui.admin.events.closeThisTabs();
+                        }
+                    },
+                    error: function (e) {
+
+                    }
+                });
+            });
+
+            //小数换算成百分数
+            function toPercent(point) {
+                if (point == 0) {
+                    return 0;
+                }
+                var str = Number(point * 100).toFixed();
+                str += "%";
+                return str;
+            }
+
+            //指定长度的数字补0
+            function PrefixInteger(num, length) {
+                return (Array(length).join('0') + num).slice(-length);
+            }  
+
+            //轮询故障信息
+            setInterval(function () {
+                $.ajax({
+                    url: '../../Handlers/Handler-devicelist.ashx',
+                    data: { actid: 'getFailMsg' },
+                    success: function (data) {
+                        //console.log(data.data);
+                        var info = JSON.parse(data);
+                        //console.log(info.data);
+                        $.each(info.data, function (index, item) {
+                            $('#messages').find('p:eq(' + index + ')').html(item.Reporter + ': ' + item.DevDept + ' 设备 [' + item.DevName + '] 故障：' + item.IssueState);
+                            $('#messages').find('span:eq(' + index + ')').html(util.timeAgo(item.ReportTime, true))
+                        });
+
+                        //计算待维修的设备数量
+                        //计算维修中的设备数量
+                        //计算待验收的设备数量
+                        //计算正常的设备数量
+                        var countWait = 0, countRepair = 0, countConfirm = 0, countAssign = 0, countOk = 0;
+                        $.each(info.data, function (index, item) {
+                            if (item.IssueState === '待维修') {
+                                countWait++;
+                            } else if (item.IssueState === '维修中') {
+                                countRepair++;
+                            } else if (item.IssueState === '待验收') {
+                                countConfirm++
+                            } else if (item.IssueState === '已派单') {
+                                countAssign++
+                            }
+                        });
+                        $('#devWait').text(countWait);
+                        $('#devRepair').text(countRepair);
+                        $('#devConfirm').text(countConfirm);
+                        var devOk = 57 - countWait - countRepair - countConfirm - countAssign;
+                        $('#devOk').text(devOk);
+                        var ngPercent = toPercent(1 - devOk / 57);
+                        element.progress('demo', ngPercent);
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+
+                $.ajax({
+                    url: '../../Handlers/Handler-planprogress.ashx',
+                    data: { actid: 'orderComplete' },
+                    success: function (res) {
+                        var json = JSON.parse(res);
+                        var data = json.data;
+                        var p = data[0].per;
+                        var ods = data[0].orders;
+                        var fd = 0;
+                        var feed = data[0].feed;
+                        element.progress('orders', p);
+                        $("#ordercount").text(data[0].orders);
+                        $("#ordercount1").text(data[0].orders);
+                        $("#orderdone").text(data[0].completed);
+                        $("#orderfeed").text(feed);
+                        if (ods != 0) {
+                            fd = toPercent(feed / ods);
+                        } else {
+                            fd = 0 + '%';
+                        }
+                        element.progress('orderreport', fd);
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+
+                var myDate = new Date();
+                //获取当前年
+                var year = myDate.getFullYear();
+                //获取上月
+                var month = myDate.getMonth();
+                if (month === 0) {
+                    year = year - 1;
+                    month = 12;
+                }
+                var ym = year + '-' + PrefixInteger(month, 2);
+                //ym = "2020-08";
+                $.ajax({
+                    url: '../../Handlers/Handler-index.ashx',
+                    data: { actid: 'getDevStatistics', month:ym },
+                    success: function (res) {
+                        var data = JSON.parse(res).data;
+                        element.progress('devicerun', data[0].UseRatio);
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+
+
+            }, 5000);
+
+        });
+    </script>
+</body>
+</html>
+

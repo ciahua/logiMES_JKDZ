@@ -1,0 +1,724 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>故障报修</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+    <link href="../../../layuiadmin/layui/css/layui.css" rel="stylesheet" />
+    <link href="../../../Styles/virtualkeyboard.css" rel="stylesheet" />
+</head>
+<body>
+
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+        <legend>故障报修</legend>
+    </fieldset>
+
+
+    <fieldset class="layui-elem-field " style="margin: 0px 10px 0 10px;">
+        <legend>故障信息</legend>
+        <div>
+            <form class="layui-form" id="failform" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">设备号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="devno" lay-verify="required" autocomplete="off" class="layui-input" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="devname" id="devname" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" readonly="readonly">
+                        </div>
+                    </div>
+
+                    <!-- xxy 2020-06-30  <input type="text" name="reserved2" lay-verify="" autocomplete="off" class="layui-input"> -->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">类型</label>
+                        <div class="layui-input-inline">
+                            <select name="reserved2" lay-filter="aihao" lay-verify="required">
+                                <option value="" selected=""></option>
+                                <option value="机械故障">机械故障</option>
+                                <option value="电气故障">电气故障</option>
+                                <option value="其它">其它</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- xxy 2020-06-30 -->
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">型 号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="devtype" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">部 门</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="devdept" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">申报人</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="reporter" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">时间</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="failtime" lay-verify="" autocomplete="off" class="layui-input" readonly="readonly">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-form-text" style="margin: 15px;">
+                    <label class="layui-form-label">描 述</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入内容" name="desc" lay-verify="required" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+
+
+    <hr class="layui-bg-green">
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="sel">选择</a>
+        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+    </script>
+    <div class="layui-card"> 
+        <div class="layui-card-body">
+            <table class="layui-table" id="failtable" lay-filter="demo1"></table>
+        </div> 
+        <!--<div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">当前设备故障</li>
+            <li>选择故障设备</li>
+
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+
+                <div class="layui-card-body">
+                    <table class="layui-table" id="failtable" lay-filter="demo1"></table>
+                </div>
+
+            </div>
+            <div class="layui-tab-item">
+                <div class="layui-card-header">选择故障设备</div>
+                <div class="layui-card-body">
+                    <table id="devices" class="layui-table" lay-data="{url:'../../../Handlers/Handler-devicelist.ashx', where:{actid: 'getTable'}, height:220, page:true, id:'idTest'}" lay-filter="demo">
+        <table id="devices" class="layui-table" lay-filter="demo">
+            <thead>
+                <tr>
+                    <th lay-data="{field:'Id', width:80, sort: true, fixed: true}">ID</th>
+                    <th lay-data="{field:'DevNo', sort: true}">设备号</th>
+                    <th lay-data="{field:'DevName', minWidth:120, sort: true}">设备名称</th>
+                    <th lay-data="{field:'DevType'}">规格型号</th>
+                    <th lay-data="{field:'DevDept', sort: true,}">安装地点</th>
+                    <th lay-data="{fixed: 'right', minWidth:150, align:'center', toolbar: '#barDemo'}">操作</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    </div>
+
+    </div>
+    </div>-->
+
+
+    </div>
+
+
+
+
+
+
+
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script src="../../../Scripts/jquery-3.4.1.js"></script>
+    <script src="../../../Scripts/helper.js"></script>
+    <script src="../../../Scripts/virtualkeyboard.js"></script>
+
+
+    <script>
+        layui.use(['form', 'layedit', 'laydate', 'table', 'util', 'element'], function () {
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , table = layui.table
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+            //获取登录信息，用户名
+            var login = layui.data('login');
+            var user = login.realname;
+            $("input[name='reporter']").val(user);//添加用户信息
+
+
+            var dn = $.trim(layui.data('LocalDevice').deviceid);
+            $.ajax({
+                url: '../../../Handlers/Handler-devicelist.ashx'
+                , data: { actid: 'getLocalDeviceInfo', data: dn }
+                , success: function (info) {
+                    var devinfo = JSON.parse(info).data[0];
+                    if (devinfo != null) {
+                        $('input[name="devno"]').val(devinfo.DevNo);
+                        $('input[name="devname"]').val(devinfo.DevName);
+                        $('input[name="devtype"]').val(devinfo.DevType);
+                        $('input[name="devdept"]').val(devinfo.DevDept);
+                    }
+                    console.log(devinfo);
+
+                    var nowtime = SiteScriptHelper.FormatTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+                    $('input[name="failtime"]').val(nowtime);
+
+                }
+                , error: function (e) {
+                    console.log(e);
+                }
+
+            });
+
+            //console.log('用户为：' + user);
+
+            //所获得的 tableIns 即为当前容器的实例
+            /*var tableIns = table.render({
+                elem: '#devices'
+                , id: 'idTest'
+                , cols: [[
+                    { fixed: 'right', title: '操作', minWidth: 150, align: 'center', toolbar: '#barDemo' }
+                    // , { field: 'Id', title: 'ID', width: 80, sort: true, fixed: true }
+                    , { field: 'DevNo', title: '设备号', sort: true }
+                    , { field: 'DevName', title: '设备名称', minWidth: 120, sort: true }
+                    , { field: 'DevType', title: '规格型号', sort: true }
+                    , { field: 'DevDept', title: '安装地点', sort: true }
+
+                ]]
+                , url: '../../../Handlers/Handler-devicelist.ashx'
+                , where: { actid: 'getTable' }
+                //, height: 220
+                , page: true
+                , done: function (res, curr, count) {
+                    var dn = $.trim(layui.data('LocalDevice').deviceid);
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicelist.ashx'
+                        , data: { actid: 'getLocalDeviceInfo', data: dn }
+                        , success: function (info) {
+                            var devinfo = JSON.parse(info).data[0];
+                            if (devinfo != null) {
+                                $('input[name="devno"]').val(devinfo.DevNo);
+                                $('input[name="devname"]').val(devinfo.DevName);
+                                $('input[name="devtype"]').val(devinfo.DevType);
+                                $('input[name="devdept"]').val(devinfo.DevDept);
+                            }
+                            console.log(devinfo);
+
+                            var nowtime = SiteScriptHelper.FormatTime(new Date(), 'yyyy-MM-dd HH:mm:ss');
+                            $('input[name="failtime"]').val(nowtime);
+
+                        }
+                        , error: function (e) {
+                            console.log(e);
+                        }
+
+                    });
+
+
+                    var devices = res.data;
+                    for (var x in devices) {
+                        var dno = devices[x].DevNo;
+                        //console.log(dno);
+                        //if (dno == $.trim(dn)) {
+                        //    alert(devices[x].DevName);
+                        //}
+                    }
+                }
+
+            });*/
+
+
+
+
+            var tableIns1 = table.render({
+                elem: '#failtable'
+                , url: '../../../Handlers/Handler-devicelist.ashx' //设置异步接口
+                , where: { actid: 'getFailTableByConfol', devname: layui.data('LocalDevice').deviceid }
+                , cols: [[
+                    //{ checkbox: true, fixed: true, style:'background-color: #eee;' }
+                    { field: 'Id', width: 80, sort: true, fixed: true, style: 'background-color: #eee;', title: 'ID', hide: true }
+                    , {
+                        field: 'IssueState', width: 80, minWidth: 150, align: 'center', title: '操作', templet: function (d) {
+                            if (d.IssueState === '待维修') {
+
+                                return '<a class="layui-btn layui-btn-xs" lay-event="confirm">确认</a>';
+
+                            } else if (d.IssueState === '已派单') {
+
+                                return '<a class="layui-btn layui-btn-xs" lay-event="confirm">确认</a>';
+                                //'<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="take">接单</a>';
+
+                            } else if (d.IssueState === '维修中') {
+
+                                return '<a class="layui-btn layui-btn-xs" lay-event="confirm">确认</a>';
+                                //'<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="take">接单</a>';
+
+                            } else if (d.IssueState === '待验收') {
+
+                                return '<a class="layui-btn layui-btn-xs" lay-event="confirm">确认</a>';
+                                // '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="take">接单</a>';
+
+                            } else if (d.IssueState === '已验收') {
+
+                                return '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查询</a>';
+                                //'<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="take">接单</a>';
+
+                            }
+                        }
+                    }
+                    , { field: 'DevName', width: 110, minWidth: 120, sort: true, style: 'background-color: #eee;', title: '设备名称' }
+                    , { field: 'IssueDesc', title: '故障描述' }
+                    , { field: 'Reporter', width: 80, title: '报修人' }
+                    , { field: 'ReportTime', width: 150, title: '报修时间' }
+                    , { field: 'ConfirmTime', width: 150, title: '确认时间' }
+                    , {
+                        field: 'IssueState', width: 80, title: '维修状态', templet: function (d) {
+                            if (d.IssueState === '待维修') {
+                                return '<span style="color: red;">' + d.IssueState + '</span>'
+                            } else if (d.IssueState === '已派单') {
+                                return '<span style="color: green;">' + d.IssueState + '</span>'
+                            } else if (d.IssueState === '维修中') {
+                                return '<span style="color: orange;">' + d.IssueState + '</span>'
+                            } else if (d.IssueState === '待验收') {
+                                return '<span style="color: blue;">' + d.IssueState + '</span>'
+                            } else if (d.IssueState === '已验收') {
+                                return '<span style="">' + d.IssueState + '</span>'
+                            }
+                        }
+                    }
+                ]]
+                , id: 'idTest'
+                , height: 540
+                , page: true
+                , toolbar: '#toolbarDemo'
+            });
+
+
+
+
+
+
+
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../../../Handlers/Handler-devicelist.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                                //假设这是iframe页
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //parent.layer.close(index); //再执行关闭
+
+                                ////这里以搜索为例
+                                //tableIns.reload({
+                                //    where: { actid: 'getTable' }
+                                //    , page: {
+                                //        curr: 1 //重新从第 1 页开始
+                                //    }
+                                //});
+
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'sel') {
+                    //layer.alert(JSON.stringify(data));
+                    //$("input[name='id']").val(data.Id);
+                    $("input[name='devno']").val(data.DevNo);
+                    $("input[name='devname']").val(data.DevName);
+                    $("input[name='devtype']").val(data.DevType);
+                    $("input[name='devdept']").val(data.DevDept);
+                    //$("input[name='reporter']").val('嘉腾');
+                    $("input[name='reporter']").val(user);
+                    var d = new Date();
+                    var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+                    $("input[name='failtime']").val(time);
+                    //layer.prompt({
+                    //    formType: 2
+                    //    , value: data.DevNo
+                    //}, function (value, index) {
+                    //    obj.update({
+                    //        DevNo: value
+                    //    });
+                    //    layer.close(index);
+                    //});
+                }
+            });
+
+            //$('textarea').virtualkeyboard();
+
+            //日期
+            laydate.render({
+                elem: '#date'
+            });
+            laydate.render({
+                elem: '#date1'
+            });
+
+            //创建一个编辑器
+            var editIndex = layedit.build('LAY_demo_editor');
+
+            //自定义验证规则
+            form.verify({
+                title: function (value) {
+                    if (value.length < 5) {
+                        return '标题至少得5个字符啊';
+                    }
+                }
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+                , content: function (value) {
+                    layedit.sync(editIndex);
+                }
+            });
+
+
+            //监听指定开关
+            form.on('switch(switchTest)', function (data) {
+                layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                    offset: '6px'
+                });
+                layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+            });
+
+            //监听提交
+            form.on('submit(demo1)', function (data) {
+                layer.alert(JSON.stringify(data.field), {
+                    title: '提交故障信息'
+                });
+                console.log(data.field);
+                $.ajax({
+                    url: '../../../Handlers/Handler-devicelist.ashx',
+                    data: { actid: 'devFail', faildata: JSON.stringify(data.field) },
+                    success: function (res) {
+                        alert("故障申报成功！");
+                        //layer.alert('故障申报已提交！', { icon: 6 });
+                        //document.getElementById("failform").reset();
+                        location.reload();
+                        //假设这是iframe页
+                        //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        //parent.layer.close(index); //再执行关闭
+
+                        ////这里以搜索为例
+                        //tableIns.reload({
+                        //    where: { actid: 'getTable' }
+                        //    , page: {
+                        //        curr: 1 //重新从第 1 页开始
+                        //    }
+                        //});
+
+                    },
+                    error: function (e) {
+                        console.log(e);
+                        alert('删除失败！');
+                    }
+                });
+
+                return false;
+            });
+
+            //表单赋值
+            layui.$('#LAY-component-form-setval').on('click', function () {
+                form.val('example', {
+                    "username": "贤心" // "name": "value"
+                    , "password": "123456"
+                    , "interest": 1
+                    , "like[write]": true //复选框选中状态
+                    , "close": true //开关状态
+                    , "sex": "女"
+                    , "desc": "我爱 layui"
+                });
+            });
+
+            //表单取值
+            layui.$('#LAY-component-form-getval').on('click', function () {
+                var data = form.val('example');
+                alert(JSON.stringify(data));
+            });
+
+
+
+
+
+
+
+
+
+            //监听行工具事件
+            table.on('tool(demo1)', function (obj) {
+                var data = obj.data;
+                console.log(data);
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../../../Handlers/Handler-devicelist.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                                //假设这是iframe页
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //parent.layer.close(index); //再执行关闭
+
+                                ////这里以搜索为例
+                                //tableIns.reload({
+                                //    where: { actid: 'getTable' }
+                                //    , page: {
+                                //        curr: 1 //重新从第 1 页开始
+                                //    }
+                                //});
+
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+
+                    layer.open({
+                        title: '编辑设备',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['1024px', '768px'], //宽高
+                        content: 'devedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            //console.log(body.html()); //得到iframe页的body内容
+                            //body.find('input').val('Hi，我是从父页来的')
+                            //body.find('example').val(data);
+                            //setTimeout(function () { body.find('#LAY-component-form-setval').trigger('click') }, 100);
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='devno']").val(data.DevNo);
+                            body.find("input[name='devname']").val(data.DevName);
+                            body.find("input[name='devtype']").val(data.DevType);
+                            body.find("input[name='quantity']").val(data.Quantity);
+                            body.find("input[name='vender']").val(data.Vender);
+                            body.find("input[name='devdept']").val(data.DevDept);
+                            body.find("input[name='buydate']").val(data.BuyDate);
+                            body.find("input[name='lifetime']").val(data.LifeTime);
+                            body.find("input[name='devclass']").val(data.DevClass);
+
+                            body.find("input[name='special']").val(data.Special);
+                            body.find("input[name='capacity']").val(data.Capacity);
+                            body.find("input[name='devstate']").val(data.DevState);
+                            body.find("input[name='importance']").val(data.Importance);
+                            body.find("input[name='value']").val(data.Value);
+                            body.find("input[name='changedate']").val(data.ChangeDate);
+                            body.find("textarea[name='desc']").val(data.ChangeDesc);
+
+                        }
+                    });
+
+                    //layer.prompt({
+                    //    formType: 2
+                    //    , value: data.DevNo
+                    //}, function (value, index) {
+                    //    obj.update({
+                    //        DevNo: value
+                    //    });
+                    //    layer.close(index);
+                    //});
+                } else if (obj.event === 'assign') {
+                    layer.open({
+                        type: 2
+                        , title: '维修派单'
+                        , content: 'assignform.html'
+                        , maxmin: true
+                        , area: ['500px', '400px']
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index]
+                                , submitID = 'LAY-user-front-submit'
+                                , submit = layero.find('iframe').contents().find('#' + submitID);
+
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(' + submitID + ')', function (info) {
+                                var field = info.field; //获取提交的字段
+                                console.log(field);
+
+                                //提交 Ajax 成功后，静态更新表格中的数据
+                                //$.ajax({});
+                                ////更新数据库
+                                var options = layero.find('iframe').contents().find("#worker option:selected");//获取子页面的选择项.
+                                var usrName = options.text();//获取当前选择项的文本.
+                                console.log(usrName + ' : ' + data.Id);
+
+                                $.ajax({
+                                    url: '../../../Handlers/Handler-devicelist.ashx',
+                                    data: { actid: 'assignRepairman', workid: field.workid, workname: usrName, issueid: data.Id },
+                                    success: function (data) {
+                                        alert('已安排维修人员！');
+
+                                    },
+                                    error: function (e) {
+                                        console.log(e);
+                                    }
+                                });
+
+                                console.log('重载表格');
+                                //这里以搜索为例
+                                tableIns.reload({
+                                    where: { //设定异步数据接口的额外参数，任意设
+                                        actid: 'getFailTable'
+                                    }
+                                    , page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                                layer.close(index); //关闭弹层
+                            });
+
+                            submit.trigger('click'); //代替子页面的click按钮事件
+                        }
+                    });
+
+                } else if (obj.event === 'confirm') {
+                    /*layer.confirm('确认修复？', function (index) {
+                        layer.close(index);
+                        var u = layui.data('login');
+
+                        $.ajax({
+                            url: '../../../Handlers/Handler-devicelist.ashx',
+                            data: { actid: 'confirmRepair', data: JSON.stringify(data), workname:u.realname },
+                            success: function (res) {
+                                layer.msg("修复成功！");
+                                table.reload('idTest');
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('未确认！');
+                            }
+                        });
+                    });*/
+                    layer.open({
+                        title: '派单信息',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['90%', '90%'], //宽高
+                        content: 'confirmDetail.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']];
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='devno']").val(data.DevNo);
+                            body.find("input[name='devname']").val(data.DevName);
+                            body.find("input[name='devtype']").val(data.DevType);
+                            body.find("input[name='quantity']").val(data.Quantity);
+                            body.find("input[name='vender']").val(data.Vender);
+                            body.find("input[name='devdept']").val(data.DevDept);
+                            body.find("input[name='buydate']").val(data.BuyDate);
+                            body.find("input[name='lifetime']").val(data.LifeTime);
+                            body.find("input[name='devclass']").val(data.DevClass);
+                            body.find("input[name='reserved2']").val(data.reserved2);
+                            body.find("input[name='Reporter']").val(data.Reporter);
+                            body.find("input[name='Repairman']").val(data.Repairman);
+                            body.find("input[name='ReportTime']").val(data.ReportTime);
+                            body.find("input[name='IssueState']").val(data.IssueState);
+                            body.find("input[name='TakeJobTime']").val(data.TakeJobTime);
+                            body.find("input[name='RepairLeader']").val(data.RepairLeader);
+                            body.find("input[name='RepairTime']").val(data.RepairTime);
+                            body.find("textarea[name='IssueDesc']").val(data.IssueDesc);
+                            body.find("textarea[name='RepairDesc']").val(data.RepairDesc);
+                            body.find("textarea[name='reserved3']").val(data.reserved3);
+
+                        }
+                    });
+
+
+
+                } else if (obj.event === 'detail') {
+
+                    layer.open({
+                        title: '派单信息',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['90%', '90%'], //宽高
+                        content: 'assignDetail.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']];
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='devno']").val(data.DevNo);
+                            body.find("input[name='devname']").val(data.DevName);
+                            body.find("input[name='devtype']").val(data.DevType);
+                            body.find("input[name='quantity']").val(data.Quantity);
+                            body.find("input[name='vender']").val(data.Vender);
+                            body.find("input[name='devdept']").val(data.DevDept);
+                            body.find("input[name='buydate']").val(data.BuyDate);
+                            body.find("input[name='lifetime']").val(data.LifeTime);
+                            body.find("input[name='devclass']").val(data.DevClass);
+                            body.find("input[name='reserved2']").val(data.reserved2);
+                            body.find("input[name='Reporter']").val(data.Reporter);
+                            body.find("input[name='Repairman']").val(data.Repairman);
+                            body.find("input[name='ReportTime']").val(data.ReportTime);
+                            body.find("input[name='IssueState']").val(data.IssueState);
+                            body.find("input[name='TakeJobTime']").val(data.TakeJobTime);
+                            body.find("input[name='RepairLeader']").val(data.RepairLeader);
+                            body.find("input[name='RepairTime']").val(data.RepairTime);
+                            body.find("textarea[name='IssueDesc']").val(data.IssueDesc);
+                            body.find("textarea[name='RepairDesc']").val(data.RepairDesc);
+
+                            body.find("input[name='Confirmor']").val(data.Confirmor);
+                            body.find("input[name='ConfirmTime']").val(data.ConfirmTime);
+                            body.find("textarea[name='ConfirmDesc']").val(data.ConfirmDesc);
+
+                            body.find("textarea[name='reserved3']").val(data.reserved3);
+                            body.find("textarea[name='reserved3']").val(data.reserved3);
+
+                        }
+                    });
+                }
+            });
+
+
+
+
+        });
+
+
+    </script>
+
+</body>
+</html>

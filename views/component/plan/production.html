@@ -1,0 +1,206 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>生产统计</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../Styles/jquery.mloading.css">
+    <style type="text/css">
+        .layui-table-cell {
+            font-size: 14px;
+            padding: 0 5px;
+            height: auto;
+            overflow: visible;
+            text-overflow: inherit;
+            white-space: normal;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-card layadmin-header">
+        <div class="layui-breadcrumb" lay-filter="breadcrumb">
+            <a lay-href="">主页</a>
+            <a><cite>组件</cite></a>
+            <a><cite>数据表格</cite></a>
+            <a><cite>数据表格的重载</cite></a>
+        </div>
+    </div>
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">生产统计</div>
+                    <div class="layui-card-body">
+
+                        <!--<div class="test-table-reload-btn" style="margin-bottom: 10px;">
+                            搜索内容：
+                            <div class="layui-inline">
+                                <input class="layui-input" name="id" id="test-table-demoReload" autocomplete="off">
+                            </div>
+                            <button class="layui-btn" data-type="reload">搜索</button>
+                        </div>-->
+
+                        <table class="layui-hide" id="test-table-reload" lay-filter="user"></table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <!--<button class="layui-btn layui-btn-sm" lay-event="addNew">新增</button>-->
+        </div>
+    </script>
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="submit">提交</a>
+        <!--<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>-->
+        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+    </script>
+
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script src="../../../Scripts/jquery-3.4.1.js"></script>
+    <script src="../../../Scripts/xlsx-populate.js"></script>
+    <script src="../../../Scripts/jquery.mloading.js"></script>
+
+    <script>
+        //
+        //layui script
+        //
+
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+            , tableEdit: '../../../Scripts/module/js/tableEdit'
+        }).use(['index', 'table', 'upload', 'laypage', 'laytpl', 'tableEdit'], function () {
+            //var $ = layui.$;
+            var table = layui.table;
+            var laypage = layui.laypage;
+
+            //方法级渲染
+            var tableIns = table.render({
+                elem: '#test-table-reload'
+                , url: '../../../Handlers/Handler-planprogress.ashx'
+                , where: { actid: "getProdValue" }
+                , cols: [[
+                    //{ field: 'id', title: 'ID', width: 60, sort: true, hide: true }
+                    { type: 'numbers', title: 'ID', width: 60, sort: true }
+                    , { field: 'Catlog', title: '电缆类别', align: 'center', sort: true }
+                    , { field: 'PoValue', title: '合同产值（万元）', align: 'center', edit: 'text', sort: true }
+                    , { field: 'CompletedValue', title: '已完成产值（万元）', align: 'center', edit: 'text', sort: true }
+                    , { field: 'UncompletedValue', title: '未完成产值（万元）', align: 'center', edit: 'text', sort: true }
+                    , { fixed: 'right', minWidth: 150, align: 'center', toolbar: '#barDemo', title: '操作' }
+                ]]
+                , id: 'testReload'
+                , page: true
+                //, even: true
+                , toolbar: '#toolbarDemo'
+                , done: function (res, curr, count) {
+                    //console.log(this.cols[0][2]);
+                    //this.cols[0][0].hide = true;//设置列初始隐藏或显示
+                    //this.cols[0][2].hide = true;//设置列初始隐藏或显示
+                    //this.cols[0][18].hide = true;//设置列初始隐藏或显示
+                    //this.cols[0][19].hide = true;//设置列初始隐藏或显示
+                }
+            });
+
+            var cols = tableIns.config.cols;
+
+            var $ = layui.$, active = {
+                reload: function () {
+                    var demoReload = $('#test-table-demoReload');
+
+                    //执行重载
+                    table.reload('testReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            //key: JSON.stringify({
+                            //    id: demoReload.val()
+                            //})
+                            actid: 'searchTable'
+                            , searchkey: demoReload.val()
+                        }
+                    });
+                }
+            };
+
+            $('.test-table-reload-btn .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+                //alert($("#test-table-demoReload").val());
+            });
+
+            //var devinfo = layui.data('thisdevice');
+            //$("#devid").val(devinfo.deviceid);
+            //$("#devname").val(devinfo.devicename);
+
+            //头工具栏事件
+            table.on('toolbar(user)', function (obj) {
+                console.log(obj);
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        layer.open({
+                            title: '添加设备',
+                            type: 2,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['1024px', '500px'], //宽高
+                            content: 'addplan.html'
+                        });
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(user)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'submit') {
+                    $.ajax({
+                        url: '../../../Handlers/Handler-planprogress.ashx',
+                        data: { actid: 'submitValues', data: JSON.stringify(data) },
+                        success: function (res) {
+                            if (res == "success") {
+                                alert("提交成功！");
+
+                            } else {
+                                alert("提交失败！");
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                            alert('提交失败！');
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

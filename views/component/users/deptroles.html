@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE>部门角色</TITLE>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="../../../Scripts/jquery-3.4.1.js"></script>
+
+</HEAD>
+
+
+<BODY>
+    <div class="layui-row layui-col-space5">
+        <div class="layui-card">
+            <div class="layui-card-header">部门角色</div>
+            <div class="layui-card-body">
+                <table id="demoTreeTb" class="layui-table" lay-filter="demo"></table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+
+    <script type="text/javascript">
+        var editObj = null, ptable = null, treeGrid = null, tableId = 'treeTable', layer = null;
+        layui.config({
+            base: '../../../packages/treeTable/'
+        }).use(['jquery', 'treeTable', 'layer', 'table'], function () {
+            var $ = layui.jquery;
+            var treeTable = layui.treeTable;
+
+            // 渲染树形表格
+            var insTb = treeTable.render({
+                elem: '#demoTreeTb',
+                url: '../../../Handlers/Handler-deptroles.ashx',
+                where: { actid: 'getTable' },
+                toolbar: '#toolbarDemo',
+                tree: {
+                    iconIndex: 2,           // 折叠图标显示在第几列
+                    isPidData: true,        // 是否是id、pid形式数据
+                    //idName: 'authorityId',  // id字段名称
+                    //pidName: 'parentId'     // pid字段名称
+                },
+                cols: [[
+                    { type: 'numbers' },
+                    { type: 'checkbox' },
+                    { field: 'name', title: '部门/角色' },
+                    { field: 'id', title: 'id' },
+                    { field: 'pid', title: 'pid' },
+                    { fixed: 'right', width: 178, align: 'center', toolbar: '#barDemo' }
+                ]],
+                done: function (res, curr, count) {
+                    insTb.expandAll();//全部展开
+                }
+            });
+
+            //监听工具条
+            treeTable.on('tool(demoTreeTb)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'add') {
+                    $.ajax({
+                        url: '../../../Handlers/Handler-deptroles.ashx'
+                        , data: { actid: 'addSubLine', data: JSON.stringify(data) }
+                        , success: function (res) {
+                            insTb.reload();
+                        }
+                        , error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                } else if (obj.event === 'del') {
+                    layer.confirm('真的删除行么', function (index) {
+                        console.log(data);
+                        var arr = data.children;
+                        if (arr === undefined || arr.length === 0) {
+                            obj.del();
+                            //从数据库删除
+                            $.ajax({
+                                url: '../../../Handlers/Handler-deptroles.ashx',
+                                data: { actid: 'delTable', data: JSON.stringify(data) },
+                                success: function (res) {
+                                    insTb.reload();
+                                },
+                                error: function (e) {
+                                    console.log(e);
+                                }
+                            });
+
+                        } else if (arr.length > 0) {
+                            alert('不能删除含有下级菜单的项，请先删除下级菜单');
+                        }
+                        layer.close(index);
+                    });
+                } else if (obj.event === 'edit') {
+                    var data = obj.data;
+                    layer.prompt({
+                        formType: 0
+                        , title: '修改 ID 为 [' + data.id + '] 的部门/角色'
+                        , value: data.name
+                    }, function (value, index) {
+                        layer.close(index);
+
+                        //这里一般是发送修改的Ajax请求
+                        $.ajax({
+                            url: '../../../Handlers/Handler-deptroles.ashx',
+                            data: { actid: 'updateTable', data: JSON.stringify(data), newvalue: value },
+                            success: function (res) {
+                                insTb.reload();
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        })
+
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            name: value
+                        });
+                    });
+
+                }
+            });
+
+            //头工具栏事件
+            treeTable.on('toolbar(demoTreeTb)', function (obj) {
+                //var checkStatus = treeTable.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNewLine':
+                        layer.msg('添加');
+                        $.ajax({
+                            url: '../../../Handlers/Handler-deptroles.ashx'
+                            , data: { actid: 'addNewLine' }
+                            , success: function (res) {
+                                insTb.reload();
+                            }
+                            , error: function (e) {
+                                console.log(e);
+                            }
+                        });
+                        break;
+                    case 'getCheckData':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+        });  
+    </script>
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm" lay-event="addNewLine">添加行</button>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+</BODY>
+</HTML>

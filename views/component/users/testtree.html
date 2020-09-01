@@ -1,0 +1,574 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var a = [
+            {
+                'fs': 1,
+                "id": 1,
+                "name": "轻应用管理",
+                "childrenIds": "10,11,12,13",
+                "parentId": 0,
+                "orderNum": 1,
+                "url": "/lightApp/light/list",
+                "description": "轻应用管理",
+                "createTime": "2018-09-19 17:18:25",
+                "modifyTime": "2018-09-21 11:17:54",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": true,
+                "childrens": [
+                    {
+                        'fs': 1,
+                        "id": 10,
+                        "name": "轻应用列表",
+                        "childrenIds": null,
+                        "parentId": 1,
+                        "orderNum": 1,
+                        "url": "/lightApp/light/list",
+                        "description": "轻应用列表",
+                        "createTime": "2018-09-19 17:25:49",
+                        "modifyTime": "2018-09-19 17:25:49",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": true,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 11,
+                        "name": "轻应用信息审核",
+                        "childrenIds": null,
+                        "parentId": 1,
+                        "orderNum": 2,
+                        "url": "/lightApp/auditInfo/list",
+                        "description": "轻应用信息审核",
+                        "createTime": "2018-09-19 17:26:28",
+                        "modifyTime": "2018-09-19 17:26:28",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 12,
+                        "name": "轻应用开发审核",
+                        "childrenIds": null,
+                        "parentId": 1,
+                        "orderNum": 3,
+                        "url": "/lightApp/auditDevelop/list",
+                        "description": "轻应用开发审核",
+                        "createTime": "2018-09-19 17:26:52",
+                        "modifyTime": "2018-09-19 17:26:52",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 13,
+                        "name": "轻应用接口审核",
+                        "childrenIds": null,
+                        "parentId": 1,
+                        "orderNum": 4,
+                        "url": "/lightApp/auditInterface/list",
+                        "description": "轻应用接口审核",
+                        "createTime": "2018-09-19 17:27:12",
+                        "modifyTime": "2018-09-19 17:27:12",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 2,
+                "name": "小程序管理",
+                "childrenIds": "17,18,15,14,16",
+                "parentId": 0,
+                "orderNum": 2,
+                "url": "/applet/builtIn/list",
+                "description": "小程序管理",
+                "createTime": "2018-09-19 17:19:36",
+                "modifyTime": "2018-09-19 17:19:36",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": true,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 14,
+                        "name": "内置小程序",
+                        "childrenIds": null,
+                        "parentId": 2,
+                        "orderNum": 1,
+                        "url": "/applet/builtIn/list",
+                        "description": "内置小程序",
+                        "createTime": "2018-09-19 17:27:55",
+                        "modifyTime": "2018-09-19 17:27:55",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 15,
+                        "name": "外置小程序",
+                        "childrenIds": null,
+                        "parentId": 2,
+                        "orderNum": 2,
+                        "url": "/applet/externalSet/list",
+                        "description": "外置小程序",
+                        "createTime": "2018-09-19 17:28:27",
+                        "modifyTime": "2018-09-19 17:28:27",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 16,
+                        "name": "小程序信息审核",
+                        "childrenIds": null,
+                        "parentId": 2,
+                        "orderNum": 3,
+                        "url": "/applet/auditInfo/list",
+                        "description": "小程序信息审核",
+                        "createTime": "2018-09-19 17:29:17",
+                        "modifyTime": "2018-09-19 17:29:17",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 17,
+                        "name": "小程序开发审核",
+                        "childrenIds": null,
+                        "parentId": 2,
+                        "orderNum": 4,
+                        "url": "/applet/auditDevelop/list",
+                        "description": "小程序开发审核",
+                        "createTime": "2018-09-19 17:29:52",
+                        "modifyTime": "2018-09-19 17:29:52",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 18,
+                        "name": "小程序接口审核",
+                        "childrenIds": null,
+                        "parentId": 2,
+                        "orderNum": 5,
+                        "url": "/applet/appletInterface/list",
+                        "description": "小程序接口审核",
+                        "createTime": "2018-09-19 17:30:22",
+                        "modifyTime": "2018-09-19 17:30:22",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 3,
+                "name": "模板管理",
+                "childrenIds": "19,20",
+                "parentId": 0,
+                "orderNum": 3,
+                "url": "/template/message/list",
+                "description": "模板管理",
+                "createTime": "2018-09-19 17:20:14",
+                "modifyTime": "2018-09-19 17:20:14",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": false,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 19,
+                        "name": "消息模板管理",
+                        "childrenIds": null,
+                        "parentId": 3,
+                        "orderNum": 1,
+                        "url": "/template/message/list",
+                        "description": "消息模板管理",
+                        "createTime": "2018-09-19 17:31:29",
+                        "modifyTime": "2018-09-19 17:31:29",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 20,
+                        "name": "订单模板管理",
+                        "childrenIds": null,
+                        "parentId": 3,
+                        "orderNum": 2,
+                        "url": "/template/order/list",
+                        "description": "订单模板管理",
+                        "createTime": "2018-09-19 17:32:01",
+                        "modifyTime": "2018-09-19 17:32:01",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 4,
+                "name": "项目管理",
+                "childrenIds": "21,22,23",
+                "parentId": 0,
+                "orderNum": 4,
+                "url": "/projects/project/list",
+                "description": "项目管理",
+                "createTime": "2018-09-19 17:20:38",
+                "modifyTime": "2018-09-19 17:20:38",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": false,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 21,
+                        "name": "项目列表",
+                        "childrenIds": null,
+                        "parentId": 4,
+                        "orderNum": 1,
+                        "url": "/projects/project/list",
+                        "description": "项目列表",
+                        "createTime": "2018-09-19 17:32:44",
+                        "modifyTime": "2018-09-19 17:32:44",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 22,
+                        "name": "项目应用管理",
+                        "childrenIds": null,
+                        "parentId": 4,
+                        "orderNum": 2,
+                        "url": "/projects/application/list",
+                        "description": "项目应用管理",
+                        "createTime": "2018-09-19 17:33:11",
+                        "modifyTime": "2018-09-19 17:33:11",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 23,
+                        "name": "项目版本管理",
+                        "childrenIds": null,
+                        "parentId": 4,
+                        "orderNum": 3,
+                        "url": "/projects/versions/list",
+                        "description": "项目版本管理",
+                        "createTime": "2018-09-19 17:33:32",
+                        "modifyTime": "2018-09-19 17:33:32",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 5,
+                "name": "信息管理",
+                "childrenIds": "24",
+                "parentId": 0,
+                "orderNum": 5,
+                "url": "/information/announcement/list",
+                "description": "信息管理",
+                "createTime": "2018-09-19 17:20:47",
+                "modifyTime": "2018-09-19 17:20:47",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": false,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 24,
+                        "name": "公告列表",
+                        "childrenIds": null,
+                        "parentId": 5,
+                        "orderNum": 1,
+                        "url": "/information/announcement/list",
+                        "description": "公告列表",
+                        "createTime": "2018-09-19 17:34:00",
+                        "modifyTime": "2018-09-19 17:34:00",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 6,
+                "name": "用户管理",
+                "childrenIds": "25,26,27,28",
+                "parentId": 0,
+                "orderNum": 6,
+                "url": "/user/registerRecord/list",
+                "description": "用户管理",
+                "createTime": "2018-09-19 17:21:02",
+                "modifyTime": "2018-09-19 17:21:02",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": true,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 25,
+                        "name": "用户注册记录",
+                        "childrenIds": null,
+                        "parentId": 6,
+                        "orderNum": 1,
+                        "url": "/user/registerRecord/list",
+                        "description": "用户注册记录",
+                        "createTime": "2018-09-19 17:34:26",
+                        "modifyTime": "2018-09-19 17:34:26",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": true,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 26,
+                        "name": "认证申请管理",
+                        "childrenIds": null,
+                        "parentId": 6,
+                        "orderNum": 2,
+                        "url": "/user/certificationApplication/list",
+                        "description": "认证申请管理",
+                        "createTime": "2018-09-19 17:34:41",
+                        "modifyTime": "2018-09-19 17:34:41",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 27,
+                        "name": "开发者认证管理",
+                        "childrenIds": null,
+                        "parentId": 6,
+                        "orderNum": 3,
+                        "url": "/user/developerCertification/list",
+                        "description": "开发者认证管理",
+                        "createTime": "2018-09-19 17:35:29",
+                        "modifyTime": "2018-09-19 17:35:29",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 28,
+                        "name": "登录日志",
+                        "childrenIds": null,
+                        "parentId": 6,
+                        "orderNum": 4,
+                        "url": "/user/loginLog/list",
+                        "description": "登录日志",
+                        "createTime": "2018-09-19 17:36:03",
+                        "modifyTime": "2018-09-19 17:36:03",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+
+                "id": 7,
+                "name": "终端管理",
+                "childrenIds": "29",
+                "parentId": 0,
+                "orderNum": 7,
+                "url": "/terminal/terminal/list",
+                "description": "终端管理",
+                "createTime": "2018-09-19 17:21:18",
+                "modifyTime": "2018-09-19 17:21:18",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": false,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 29,
+                        "name": "终端管理",
+                        "childrenIds": null,
+                        "parentId": 7,
+                        "orderNum": 1,
+                        "url": "/terminal/terminal/list",
+                        "description": "终端管理",
+                        "createTime": "2018-09-19 17:36:34",
+                        "modifyTime": "2018-09-19 17:36:34",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 8,
+                "name": "基础配置",
+                "childrenIds": "30",
+                "parentId": 0,
+                "orderNum": 8,
+                "url": "/basics/appAttribute/list",
+                "description": "基础配置",
+                "createTime": "2018-09-19 17:21:34",
+                "modifyTime": "2018-09-19 17:21:34",
+                "status": "ENABLE",
+                "mustUse": "NO",
+                "own": false,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 30,
+                        "name": "应用属性管理",
+                        "childrenIds": null,
+                        "parentId": 8,
+                        "orderNum": 1,
+                        "url": "/basics/appAttribute/list",
+                        "description": "应用属性管理",
+                        "createTime": "2018-09-19 17:36:57",
+                        "modifyTime": "2018-09-19 17:36:57",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    }
+                ]
+            },
+            {
+                'fs': 0,
+                "id": 9,
+                "name": "系统管理",
+                "childrenIds": "31,32",
+                "parentId": 0,
+                "orderNum": 9,
+                "url": null,
+                "description": "系统管理",
+                "createTime": "2018-09-19 17:22:41",
+                "modifyTime": "2018-09-19 17:22:41",
+                "status": "ENABLE",
+                "mustUse": "YES",
+                "own": false,
+                "childrens": [
+                    {
+                        'fs': 0,
+                        "id": 31,
+                        "name": "角色管理",
+                        "childrenIds": null,
+                        "parentId": 9,
+                        "orderNum": 1,
+                        "url": null,
+                        "description": "角色管理",
+                        "createTime": "2018-09-19 17:40:02",
+                        "modifyTime": "2018-09-19 17:40:02",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": false,
+                        "childrens": null
+                    },
+                    {
+                        'fs': 0,
+                        "id": 32,
+                        "name": "权限管理",
+                        "childrenIds": null,
+                        "parentId": 9,
+                        "orderNum": 2,
+                        "url": null,
+                        "description": "权限管理",
+                        "createTime": "2018-09-19 17:40:42",
+                        "modifyTime": "2018-09-19 17:40:42",
+                        "status": "ENABLE",
+                        "mustUse": "NO",
+                        "own": true,
+                        "childrens": null
+                    }
+                ]
+            }
+        ];
+        var tickMenuIdFilter = (function () {
+            var resultArr = new Array();
+            var getTickMenuId = function (obj) {
+                if (undefined == obj || null == obj || !obj instanceof Object) {
+                    return;
+                }
+                if (obj.fs>0) {
+                    console.log('obj',obj)
+                    obj.disable=true
+                    resultArr.push(obj.id);
+                }
+                if (null != obj.childrens && obj.childrens instanceof Array) {
+                    for (let child of obj.childrens) {
+                        getTickMenuId(child);
+                    }
+                }
+
+            }
+
+            return {
+                filter: function (arr) {
+                    if (!arr instanceof Array) {
+                        return false;
+                    }
+                    resultArr = new Array();
+                    for (let rootMenu of arr) {
+                        getTickMenuId(rootMenu);
+                    }
+                    return resultArr;
+                }
+            }
+        })();
+        var b = tickMenuIdFilter.filter(a);
+        console.log("a", a);
+        console.log("b", b);
+    </script>
+</body>
+
+</html>

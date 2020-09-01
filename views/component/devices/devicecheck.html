@@ -1,0 +1,454 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>操作点检</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+    <div class="layui-card">
+        <div class="layui-card-header">操作点检</div>
+        <div class="layui-card-body">
+            <div class="test-table-reload-btn" style="margin-bottom: 10px;">
+                搜索内容：
+                <div class="layui-inline">
+                    <input class="layui-input" name="id" id="test-table-demoReload" autocomplete="off">
+                </div>
+                <button class="layui-btn" data-type="reload">搜索</button>
+            </div>
+
+            <table class="layui-table" id="demo" lay-filter="demo"></table>
+            <p>* 可通过表格右上角的“筛选列”图标来选择 显示/隐藏 列</p>
+            <p>* 点检结果：正常、异常</p>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!--<button class="layui-btn layui-btn-sm" lay-event="addNew">批量提交</button>-->
+            </div>
+        </script>
+        <script type="text/html" id="selectSex">
+            <div class="layui-input-block">
+                <select name='Sex' lay-filter='Sex'>
+                    <option value=""></option>
+                    <option value="0">√正常</option>
+                    <option value="1">×不正常</option>
+                    <option value="2">⊙修理完毕</option>
+                    <option value="3">△停工</option>
+                </select>
+            </div>
+        </script>
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="check">提交</a>
+            <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+        </script>
+        <script type="text/html" id="titleTipl">
+            <a href="javascript:;" data-d="{{d.DeviceId}}" οnmοuseοver="show_shopm(this)">{{d.DeviceId}}</a>
+        </script>
+    </div>
+
+    <script src="../../../layuiadmin/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+    <script type="text/javascript">
+        layui.config({
+            base: '../../../Scripts/module/'
+        }).extend({
+            tableEdit: 'js/tableEdit'
+        }).use(['tree', 'util', 'layer', 'element', 'jquery', 'form', 'table', 'tableEdit'], function () {
+            var table = layui.table
+                , tableEdit = layui.tableEdit;
+            var form = layui.form
+                , $ = layui.$
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+            var params = [
+                { name: 1, value: "正常" },
+                { name: 2, value: "异常" },
+            ];
+
+            $('#test-table-demoReload').val($.trim(layui.data('LocalDevice').deviceid));
+            setTimeout(function () {
+                active.reload();
+            }, 100);
+
+            //所获得的 tableIns 即为当前容器的实例
+            var tableIns = table.render({
+                elem: '#demo'
+                , url: '../../../Handlers/Handler-devicecheck.ashx' //设置异步接口
+                , where: { actid: 'getCheckTable' }
+                , cols: [[
+                    { type: 'numbers', fixed: true, style: 'background-color: #eee;' }
+                    , { checkbox: true, fixed: true, style: 'background-color: #eee;', hide:true }
+                    , { field: 'DevNo', align: 'center', sort: true, style: 'background-color: #eee;', title: '设备号', hide:true }
+                    , { field: 'DevName', align: 'center', minWidth: 120, sort: true, style: 'background-color: #eee;', title: '设备名称', hide:true }
+                    , { field: 'DevDept', align: 'center', sort: true, style: 'background-color: #eee;', title: '安装地点', hide:true  }
+                    , { field: 'CheckItem', align: 'center', minWidth: 150, style: 'background-color: #eee;', title: '点检项目' }
+                    , { field: 'CheckCriteria', align: 'center', minWidth: 150, style: 'background-color: #eee;', title: '点检标准' }
+                    , { field: 'Means', align: 'center', style: 'background-color: #eee;', title: '点检方法', width:100 }
+                    , {
+                        field: 'DayShift', align: 'center', title: '白班', width: 80
+                        , event: 'danxuan', config: { type: 'select', data: params, verify: true }
+                        , templet: function (d) {
+                            if (d.DayShift) {
+                                if (d.DayShift.value) {                                    
+                                    return d.DayShift.value;
+                                }
+                                return d.DayShift;
+                            }
+                            return ''
+                        }
+                    }
+                    , {
+                        field: 'DayRecord', align: 'center', style: 'background-color: #fff;', title: '白班异常记录', minWidth: 120 }
+                    , {
+                        field: 'NightShift', align: 'center', title: '夜班', width: 80
+                        , event: 'danxuan1', config: { type: 'select', data: params, verify: true }
+                        , templet: function (d) {
+                            if (d.NightShift) {
+                                if (d.NightShift.value) {
+                                    return d.NightShift.value;
+                                }
+                                return d.NightShift;
+                            }
+                            return ''
+                        }
+                    }
+                    , { field: 'NightRecord', align: 'center', style: 'background-color: #fff;', title: '夜班异常记录', minWidth: 120 }
+                    , { fixed: 'right', minWidth: 150, align: 'center', toolbar: '#barDemo', title: '操作', width: 100 }
+                ]]
+                , id: 'idTest'
+                , height: 540
+                , page: true
+                , toolbar: '#toolbarDemo'
+                , done: function (res, curr, count) {
+                    //var myDate = new Date;
+                    //console.log(this.cols[0][9].config.type);
+                    //this.cols[0][2].hide = true;//设置列初始隐藏或显示
+                    //this.cols[0][3].hide = true;//设置列初始隐藏或显示
+                }
+            });
+
+            var cols = tableIns.config.cols;
+
+            //头工具栏事件
+            table.on('toolbar(demo)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'addNew':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function (obj) {
+                var data = obj.data;
+                let event = obj.event;
+                console.log(event);
+
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除该行么？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            url: '../../../Handlers/Handler-devicelist.ashx',
+                            data: { actid: 'delTable', data: JSON.stringify(data) },
+                            success: function (res) {
+                                alert("删除成功！");
+                                //假设这是iframe页
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //parent.layer.close(index); //再执行关闭
+
+                                ////这里以搜索为例
+                                //tableIns.reload({
+                                //    where: { actid: 'getTable' }
+                                //    , page: {
+                                //        curr: 1 //重新从第 1 页开始
+                                //    }
+                                //});
+
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                alert('删除失败！');
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    //layer.alert(JSON.stringify(data));
+
+                    layer.open({
+                        title: '编辑设备',
+                        type: 2,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['1024px', '768px'], //宽高
+                        content: 'devedit.html',
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            //console.log(body.html()); //得到iframe页的body内容
+                            //body.find('input').val('Hi，我是从父页来的')
+                            //body.find('example').val(data);
+                            //setTimeout(function () { body.find('#LAY-component-form-setval').trigger('click') }, 100);
+                            body.find("input[name='id']").val(data.Id);
+                            body.find("input[name='devno']").val(data.DevNo);
+                            body.find("input[name='devname']").val(data.DevName);
+                            body.find("input[name='devtype']").val(data.DevType);
+                            body.find("input[name='quantity']").val(data.Quantity);
+                            body.find("input[name='vender']").val(data.Vender);
+                            body.find("input[name='devdept']").val(data.DevDept);
+                            body.find("input[name='buydate']").val(data.BuyDate);
+                            body.find("input[name='lifetime']").val(data.LifeTime);
+                            body.find("input[name='devclass']").val(data.DevClass);
+                            body.find("input[name='special']").val(data.Special);
+                            body.find("input[name='capacity']").val(data.Capacity);
+                            body.find("input[name='devstate']").val(data.DevState);
+                            body.find("input[name='importance']").val(data.Importance);
+                            body.find("input[name='value']").val(data.Value);
+                            body.find("input[name='changedate']").val(data.ChangeDate);
+                            body.find("textarea[name='desc']").val(data.ChangeDesc);
+                        }
+                    });
+                } else if (obj.event === 'check') {
+                    //layer.alert(JSON.stringify(data));
+                    console.log(data.Result);
+
+                    var res = '';
+
+                    if (res == null || $.trim(res) == '') {
+                        layer.msg('提交字段为空！');
+                        return;
+                    }
+                    var u = layui.data('login');
+                    var realName = u.realname;
+
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicecheck.ashx',
+                        data: { actid: 'insTable', data: JSON.stringify(data), workname: realName },
+                        success: function (res) {
+                            layer.msg('提交成功');
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                } else if (obj.event === 'danxuan') {
+                    alert("danxuan");
+                }
+            });
+
+            //执行搜索
+            var $ = layui.$, active = {
+                reload: function () {
+                    var demoReload = $('#test-table-demoReload');
+
+                    //执行重载
+                    table.reload('idTest', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            actid: 'searchTable'
+                            , searchkey: demoReload.val()
+                        }
+                    });
+                }
+            };
+
+            $('.test-table-reload-btn .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+                //alert($("#test-table-demoReload").val());
+
+            });
+
+            //-------------------新下拉框-----------------
+            /**
+             * 参数cols是table.render({})中的cols属性值
+             * aop代理是基于event点击事件进行操作的，
+             * 因此cols中务必开启event点击事件！
+             **/
+            var aopTable = tableEdit.aopObj(cols); //获取一个aop对象
+            /**
+             * 注意：
+             * 1、 aopTable.on('tool(xxx)',function (obj) {})
+             * 2、 table.on('tool(yyy)',function (obj) {})
+             * 如果1中的xxx与2中的yyy字符串相同时，
+             * 不能同时用，用了会造成后调用者覆盖前调用者。
+             * 应该直接用1来代替2，因为1中包含了2中的事件。
+             * 如果不相同，则可以同时使用。
+             **/
+            aopTable.on('tool(demo)', function (obj) {
+                var field = obj.field; //单元格字段
+                var value = obj.value; //修改后的值
+                var data = obj.data; //当前行旧数据
+                var event = obj.event; //当前单元格事件属性值
+
+                if (event === 'danxuan') {
+                    var content = value.value;//单元格的文字：正常/异常
+                    if (content === '异常') {
+                        //弹层输入文本
+                        layer.prompt({ title: '异常记录', value: '', formType: 2 }, function (text, index) {
+                            layer.close(index);
+                            var update = {};
+                            update[field] = value;
+                            //把value更新到行中
+                            obj.update(update); //更新异常
+
+                            obj.update({
+                                DayRecord: text //更新记录
+                            });
+                        });
+                    } else if (content === '正常') {
+                        var update = {};
+                        update[field] = value;
+                        //把value更新到行中
+                        obj.update(update);
+                        obj.update({
+                            DayRecord: '' //更新记录
+                        });
+                    }            
+                    
+                    /**
+                     *说白了，此obj与table.on('tool(tableEvent)',function (obj) {})
+                     *中的obj对象是同一个，所以可以如此操作。
+                     *
+                     * */
+                } if (event === 'danxuan1') {
+                    var content = value.value;//单元格的文字：正常/异常
+                    if (content === '异常') {
+                        //弹层输入文本
+                        layer.prompt({ title: '异常记录', value: '', formType: 2 }, function (text, index) {
+                            layer.close(index);
+                            var update = {};
+                            update[field] = value;
+                            //把value更新到行中
+                            obj.update(update); //更新异常
+
+                            obj.update({
+                                NightRecord: text //更新记录
+                            });
+                        });
+                    } else if (content === '正常') {
+                        var update = {};
+                        update[field] = value;
+                        //把value更新到行中
+                        obj.update(update);
+                        obj.update({
+                            NightRecord: '' //更新记录
+                        });
+                    }
+
+                    /**
+                     *说白了，此obj与table.on('tool(tableEvent)',function (obj) {})
+                     *中的obj对象是同一个，所以可以如此操作。
+                     *
+                     * */
+                }else if (event === 'check') {
+                    //layer.alert(JSON.stringify(data));
+                    console.log(data.DayShift);
+                    var res = '', memo='';
+                    var aDate = new Date;
+                    var submitHour = aDate.getHours();
+                    if (submitHour >= 8 && submitHour < 20) {
+                        res = data.DayShift.value;
+                        if (res == null || $.trim(res) == '') {
+                            layer.msg('提交字段为空！');
+                            return;
+                        }
+                        if (res === '异常') {
+                            memo = $.trim(data.DayRecord);
+                            if (memo == null || memo == '') {
+                                layer.msg('请填写白班异常记录！');
+                                return;
+                            }
+                        }
+                    } else if ((submitHour >= 0 && submitHour < 8) || (submitHour >= 20 && submitHour<24)) {
+                        res = data.NightShift.value;
+                        if (res == null || $.trim(res) == '') {
+                            layer.msg('提交字段为空！');
+                            return;
+                        }
+                        if (res === '异常') {
+                            memo = $.trim(data.NightRecord);
+                            if (memo == null || memo == '') {
+                                layer.msg('请填写夜班异常记录！');
+                                return;
+                            }
+                        }
+                    }
+
+                    var u = layui.data('login');
+                    var realName = u.realname;
+
+                    $.ajax({
+                        url: '../../../Handlers/Handler-devicecheck.ashx',
+                        data: { actid: 'insTable', data: JSON.stringify(data), workname: realName },
+                        success: function (res) {
+                            layer.msg('提交成功');
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                }
+            });
+
+
+            /**
+             * 级联下拉框 => 点击事件生成下拉框之前的回调函数
+             * 主要用于 => 动态获取单元格下拉数据
+             * tableEvent => table的lay-filter属性值
+             * 如示例代码所示
+             */
+            tableEdit.on('clickBefore(demo)', function (obj) {
+                var cascadeSelectData = obj.data; //级联数据
+                var cascadeSelectField = obj.field; //级联字段
+                if (Array.isArray(cascadeSelectData)) {
+                    cascadeSelectData = cascadeSelectData[0];
+                }
+                var result = {
+                    data: [{ name: 1, value: '语文' }, { name: 2, value: '数学' }, { name: 3, value: '英语' }, { name: 4, value: '物理' }, { name: 5, value: '化学' }],
+                    enabled: false //单选 true为多选
+                };
+                var result1 = {
+                    data: [{ name: 6, value: '政治' }, { name: 7, value: '地理' }, { name: 8, value: '历史' }, { name: 9, value: '生物' }, { name: 10, value: '音乐' }],
+                    enabled: false //单选 true为多选
+                };
+                //这里用定时器来模拟异步操作，同步操作直接return即可。
+                setTimeout(function () {
+                    if (cascadeSelectField === 'rqjl') {
+                        tableEdit.callbackFn("async(demo)", result1);
+                    } else {
+                        tableEdit.callbackFn("async(demo)", result);
+                    }
+                }, 500);
+            });
+        });
+
+    </script>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+</body>
+</html>
